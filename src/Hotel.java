@@ -23,7 +23,8 @@ public class Hotel {
         return elevatorCount;
     }
 
+
     public Elevator[] getElevators() {
-        return elevators;
+        return this.elevators;
     }
 }

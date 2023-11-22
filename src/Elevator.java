@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Elevator {
     private final int CAPACITY = 10;
     private final double MAX_WEIGHT = 700; // in kg
@@ -73,5 +75,10 @@ public class Elevator {
 
     public boolean isPaused() {
         return isPaused;
+    }
+
+    @Override
+    public String toString() {
+        return "This elevator is at " + this.currentFloor;
     }
 }
