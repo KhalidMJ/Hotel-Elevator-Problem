@@ -9,6 +9,7 @@ public class Main {
         Hotel hotel = new Hotel(floors, elev); // creating hotel object
 
         Elevator test = new Elevator();
+        System.out.println("Hello");
 
         System.out.println(hotel.getElevators()[0]);
     }
