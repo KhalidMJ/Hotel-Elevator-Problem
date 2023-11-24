@@ -1,5 +1,5 @@
 public abstract class Passenger {
-        public static void main(String[] args) {
+
             /** int currentFlor;
              int distinationFlor;
              long requestTime;
@@ -12,7 +12,7 @@ public abstract class Passenger {
              public double getWeight(){ }
              */
 
-        }
+
     }
 
 
