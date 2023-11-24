@@ -11,6 +11,5 @@ public class Main {
         Elevator test = new Elevator();
         System.out.println("Hello");
 
-        System.out.println(hotel.getElevators()[0]);
     }
 }

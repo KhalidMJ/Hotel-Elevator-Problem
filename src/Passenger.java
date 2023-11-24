@@ -1,5 +1,4 @@
-public class Passenger extends Person {
-
+public abstract class Passenger {
         public static void main(String[] args) {
             /** int currentFlor;
              int distinationFlor;
