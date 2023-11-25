@@ -9,9 +9,14 @@ import java.util.Arrays;
 public class Test {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
-        // String[][] passengers = getPassengersFromFile(path);
-        // System.out.println(Arrays.deepToString(passengers));
-
+        try {
+            String[][] data = getPassengersFromFile(path);
+            assert data != null;
+            Passenger[] passengers = turnPassengersArrayIntoObjects(data);
+            System.out.println(Arrays.toString(passengers));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
 
 
@@ -46,20 +51,36 @@ public class Test {
         }
     }
 
-    public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData){
+    public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData) throws IOException {
         int count = passengersData.length;
         int fields = passengersData[0].length;
-        Passenger[] passengerObjects = new Passenger[count];
 
+        String name, id;
+        double weight;
+        int age, currentFloor, destinationFloor;
+        long arrivalTime;
+
+        int i = 0;
+        Passenger[] passengerObjects = new Passenger[count];
         for (String[] data : passengersData) {
+            name = data[1];
+            id = data[2];
+            weight = Double.parseDouble(data[3]);
+            age = Integer.parseInt(data[4]);
+            arrivalTime = Long.parseLong(data[5]);
+            currentFloor = Integer.parseInt(data[5]);
+            destinationFloor = Integer.parseInt(data[6]);
+
             if (data[0].equalsIgnoreCase("Guest")) {
-                Guest passenger = new Guest();
-                passenger.age = 5;
+                Guest passenger = new Guest(name, id, weight, age, currentFloor, destinationFloor, arrivalTime);
+                passengerObjects[i] = passenger;
             } else if (data[0].equalsIgnoreCase("Staff")) {
-                Staff passenger = new Staff();
-            }
+                Staff passenger = new Staff(name, id, weight, age, currentFloor, destinationFloor, arrivalTime);
+                passengerObjects[i] = passenger;
+            } else {throw new IOException("CSV FILE FORMAT IS NOT CORRECT");}
+            i++;
         }
 
-        return null;
+        return passengerObjects;
     }
 }
