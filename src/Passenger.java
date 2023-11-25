@@ -1,18 +1,21 @@
 public abstract class Passenger {
 
-            /** int currentFlor;
-             int distinationFlor;
-             long requestTime;
-             long arriveTime ;
-             public void Passenger(){ }
-             public void requestUp(){ }
-             public void requestDown(){ }
-             public String getName(){ }
-             public int getId(){ }
-             public double getWeight(){ }
-             */
+    protected String name;
+    protected int id;
+    protected double weight;
+    protected int age;
 
-
+    protected Passenger(String name, int id, double weight, int age) {
+        this.name = name;
+        this.id = id;
+        this.weight = weight;
+        this.age = age;
     }
 
-
+    protected Passenger(){
+        this.name = "Anonymous  guest";
+        this.id = 11111;
+        this.weight = 70;
+        this.age = 25;
+    }
+}
