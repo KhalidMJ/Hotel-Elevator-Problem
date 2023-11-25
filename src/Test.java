@@ -1,30 +1,45 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
 
 
 public class Test {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
-        String line = "";
         ArrayList<String> pas = new ArrayList<>();
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
-            int i = 0;
-            while ((line = reader.readLine()) != null){
-                if (i == 0) {i++; continue;}
+            ArrayList<String> lines = new ArrayList<>(reader.lines().toList());
+            int count = (int) (lines.size() - 1);
+            int fields = (int) lines.get(0).split(",").length;
 
-                String[] values = line.split(",");
-                pas.addAll(List.of(values));
+            String[][] passengers = new String[count][fields];
+
+            for (int i = 1; i < lines.size(); i++){
+                String[] values = lines.get(i).split(",");
+
+                for (int j = 0; j < values.length; j++){
+                    passengers[i - 1][j] = values[j]; // (i - 1) so that it would skip the labels row and only store passengers data
+                }
             }
-        } catch (Exception e){
+            System.out.println(count);
+            System.out.println(fields);
+            System.out.println(Arrays.deepToString(passengers));
+            reader.close();
+        } catch (Exception e) {
             System.out.println("ERROR");
-
-        } finally {
-
+            System.out.println(e.getMessage());
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
-        System.out.println(pas);
+
+
     }
+
+    //public static String[][] storePassengersFromFileIntoArray(String path){
+    //
+    //}
 }
