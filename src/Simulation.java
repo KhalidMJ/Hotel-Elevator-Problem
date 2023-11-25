@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+// TODO Create a method that would generate random passengers and store them in the CSV files
 
-public class Test {
+public class Simulation {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
+        // TEST UNIT - main function well be removed later
         try {
             String[][] data = getPassengersFromFile(path);
             assert data != null;
@@ -21,20 +23,21 @@ public class Test {
 
 
     }
-
+// Method to extract passengers data form a csv file and store them into a 2D array
     public static String[][] getPassengersFromFile(String path) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
             ArrayList<String> lines = new ArrayList<>(reader.lines().toList());
-            int count = lines.size() - 1;
+            lines.remove(0); // First line (labels) is omitted
+            int count = lines.size();
             int fields = lines.get(0).split(",").length;
+            // Creating 2D array and store the extracted values in it
             String[][] passengers = new String[count][fields];
-
-            for (int i = 1; i < lines.size(); i++){
+            for (int i = 0; i < lines.size(); i++){
                 String[] values = lines.get(i).split(",");
 
                 for (int j = 0; j < values.length; j++){
-                    passengers[i - 1][j] = values[j]; // (i - 1) so that it would skip the labels row and only store passengers data
+                    passengers[i][j] = values[j];
                 }
             }
 
@@ -51,10 +54,9 @@ public class Test {
         }
     }
 
+    // Method to create Passenger objects using the data from 2D array and return them in an array.
     public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData) throws IOException {
         int count = passengersData.length;
-        int fields = passengersData[0].length;
-
         String name, id;
         double weight;
         int age, currentFloor, destinationFloor;
