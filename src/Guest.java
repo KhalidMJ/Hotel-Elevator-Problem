@@ -3,8 +3,15 @@ import java.sql.Time;
 public class Guest extends Passenger {
     private int currentFloor;
     private int destinationFloor;
-    private Time requestTime;
+    private long requestTime;
     private Time arriveTime;
+
+    public Guest(String name, String id, double weight, int age, int currentFloor, int destinationFloor, long requestTime) {
+        super(name, id, weight, age);
+        this.currentFloor = currentFloor;
+        this.destinationFloor = destinationFloor;
+        this.requestTime = requestTime;
+    }
 
     public Guest(int currentFloor, int destinationFloor){
         super();
@@ -22,17 +29,6 @@ public class Guest extends Passenger {
 
     public void requestDown() {
         this.destinationFloor = this.currentFloor - 1;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-    public int getId() {
-        return this.id;
-    }
-
-    public double getWeight() {
-        return this.weight;
     }
 
     public int currentFloor() {
