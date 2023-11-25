@@ -6,7 +6,14 @@ public class Guest extends Passenger {
     private Time requestTime;
     private Time arriveTime;
 
+    public Guest(int currentFloor, int destinationFloor){
+        super();
+        this.currentFloor = currentFloor;
+        this.destinationFloor = destinationFloor;
+    }
+
     public Guest() {
+        super();
     }
 
     public void requestUp() {
@@ -17,15 +24,22 @@ public class Guest extends Passenger {
         this.destinationFloor = this.currentFloor - 1;
     }
 
-
-
     public String getName() {
-        return getName();
+        return this.name;
     }
     public int getId() {
-        return getId();
+        return this.id;
     }
 
     public double getWeight() {
-        return getWeight();
-    }}
+        return this.weight;
+    }
+
+    public int currentFloor() {
+        return this.currentFloor;
+    }
+
+    public int destinationFloor() {
+        return this.destinationFloor;
+    }
+}

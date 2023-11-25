@@ -8,8 +8,5 @@ public class Main {
         Elevator[] elev = {new Elevator(), new Elevator()}; // creating elevators
         Hotel hotel = new Hotel(floors, elev); // creating hotel object
 
-        Elevator test = new Elevator();
-        System.out.println("Hello");
-
     }
 }
