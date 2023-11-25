@@ -9,8 +9,12 @@ import java.util.Arrays;
 public class Test {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
-        String[][] passengers = getPassengersFromFile(path);
-        System.out.println(Arrays.deepToString(passengers));
+        // String[][] passengers = getPassengersFromFile(path);
+        // System.out.println(Arrays.deepToString(passengers));
+
+
+
+
     }
 
     public static String[][] getPassengersFromFile(String path) {
@@ -40,5 +44,22 @@ public class Test {
             System.out.println(ioe.getMessage());
             return null;
         }
+    }
+
+    public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData){
+        int count = passengersData.length;
+        int fields = passengersData[0].length;
+        Passenger[] passengerObjects = new Passenger[count];
+
+        for (String[] data : passengersData) {
+            if (data[0].equalsIgnoreCase("Guest")) {
+                Guest passenger = new Guest();
+                passenger.age = 5;
+            } else if (data[0].equalsIgnoreCase("Staff")) {
+                Staff passenger = new Staff();
+            }
+        }
+
+        return null;
     }
 }
