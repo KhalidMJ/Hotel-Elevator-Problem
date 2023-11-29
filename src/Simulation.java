@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 // TODO Create a method that would generate random passengers and store them in the CSV files
 
@@ -11,16 +12,14 @@ public class Simulation {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
         // TEST UNIT - main function well be removed later
-        try {
-            String[][] data = getPassengersFromFile(path);
-            assert data != null;
-            Passenger[] passengers = turnPassengersArrayIntoObjects(data);
-            System.out.println(Arrays.toString(passengers));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-
+        //try {
+        //    String[][] data = getPassengersFromFile(path);
+        //    assert data != null;
+        //    Passenger[] passengers = turnPassengersArrayIntoObjects(data);
+        //    System.out.println(Arrays.toString(passengers));
+        //} catch (Exception e){
+        //    e.printStackTrace();
+        //}
 
     }
 // Method to extract passengers data form a csv file and store them into a 2D array
@@ -82,7 +81,32 @@ public class Simulation {
             } else {throw new IOException("CSV FILE FORMAT IS NOT CORRECT");}
             i++;
         }
-
         return passengerObjects;
     }
+
+    public static void generateRandomPassengers(int count, long firstPasTime, long lastPasTime, String path){
+        String[] generatedPassengers = new String[count];
+        // TODO
+    }
+
+    private static int returnRandomIndexFromProbDist(double[] dist){
+        double rand = Math.random();
+        for (int i = 0; i < dist.length; i++){
+            if (rand <= dist[i]) return i;
+            dist[i + 1] += dist[i];
+        }
+        return 0;
+    }
+
+    private static int returnRandomIndexFromRange(int min, int max){
+        return java.util.concurrent.ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
+    private static String returnRandomName(){
+        String[] names = {"Khalid", "Ammar", "Fares", "Yones", "Anas", "Muhammed"};
+        int index;
+        index = java.util.concurrent.ThreadLocalRandom.current().nextInt(names.length);
+        return names[index];
+    }
+
 }
