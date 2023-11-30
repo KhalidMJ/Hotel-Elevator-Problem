@@ -17,6 +17,61 @@ public class Floor {
     // Method to add a passenger to the waiting list
     public void addPassenger(Passenger person) {
         waitingPassengers.add(person);
+        // Notify the elevator system that the call button has been pressed
+        callButton.pressButton();
+        ElevatorSystem.notifyFloorCall(this);
+        System.out.println("Passenger added to waiting list at Floor " + FLOOR_NUMBER);
+    }
+
+    // Method to handle elevator arrival at the floor
+    public void elevatorArrival() {
+        // Additional logic for handling elevator arrival can be added here
+        System.out.println("Elevator has arrived at Floor " + FLOOR_NUMBER);
+        openDoors();
+        // Let waiting passengers enter the elevator
+        for (Passenger passenger : waitingPassengers) {
+            // Assuming there is a method in the Passenger class to enter the elevator
+            passenger.enterElevator();
+    }
+        clearWaitingPassengers();
+    }
+
+    // Method to handle elevator departure from the floor
+    public void elevatorDeparture() {
+        System.out.println("Elevator departing from Floor " + FLOOR_NUMBER);
+        closeDoors();
+        // Reset the call button after the elevator departs
+        callButton.resetButton();
+    }
+
+    // Method to clear the waiting passengers list after they have entered the elevator
+    private void clearWaitingPassengers() {
+        waitingPassengers.clear();
+        System.out.println("Waiting passengers cleared at Floor " + FLOOR_NUMBER);
+    }
+
+    // Method to simulate the time taken for a passenger to press the call button
+    public void simulatePassengerPressingButton() {
+        // Simulate some delay before the passenger presses the button
+        try {
+            Thread.sleep(1000); // 1 second delay
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        // Press the call button after the delay
+        addPassenger(new Passenger());
+    }
+
+    // Method to open elevator doors
+    private void openDoors() {
+        // Additional logic for opening doors can be added here
+        System.out.println("Doors open at Floor " + FLOOR_NUMBER);
+    }
+
+    // Method to close elevator doors
+    private void closeDoors() {
+        // Additional logic for closing doors can be added here
+        System.out.println("Doors close at Floor " + FLOOR_NUMBER);
     }
 
     // Method to get the number of waiting passengers
