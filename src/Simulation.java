@@ -1,25 +1,25 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
-// TODO Create a method that would generate random passengers and store them in the CSV files
+
 
 public class Simulation {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
-        // TEST UNIT - main function well be removed later
-        //try {
-        //    String[][] data = getPassengersFromFile(path);
-        //    assert data != null;
-        //    Passenger[] passengers = turnPassengersArrayIntoObjects(data);
-        //    System.out.println(Arrays.toString(passengers));
-        //} catch (Exception e){
-        //    e.printStackTrace();
-        //}
+        // main function well be removed later
+        /*
+        try {
+            String[][] data = getPassengersFromFile(path);
+            assert data != null;
+            Passenger[] passengers = turnPassengersArrayIntoObjects(data);
+            System.out.println(Arrays.toString(passengers));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        */
+
+        generateRandomPassengersToFile(25, 15, 900, path);
 
     }
 // Method to extract passengers data form a csv file and store them into a 2D array
@@ -84,16 +84,52 @@ public class Simulation {
         return passengerObjects;
     }
 
-    public static void generateRandomPassengers(int count, long firstPasTime, long lastPasTime, String path){
+    public static void generateRandomPassengersToFile(int count, long firstPasTime, long lastPasTime, String path){
         String[] generatedPassengers = new String[count];
-        // TODO
+        String passenger;
+        // Probability Distributions
+        double[] currentFloorPD = {0.35, 0.10, 0.10, 0.09, 0.09, 0.09, 0.09, 0.09};
+        double[] distFloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
+        double[] distFloorFromGroundPD = {0.00, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.10};
+
+        // Generating Random Passengers
+        for (int i = 0; i < count; i++){ //FIXME: A passenger can have the same current and destination floors.
+            passenger = "guest,"
+                        + returnRandomName() + "," // Generating a random name
+                        + returnRandomIndexFromRange(10000, 19999) + "," // Generating a random ID
+                        + returnRandomIndexFromRange(30, 130) + "," // Generating a random weight
+                        + returnRandomIndexFromRange(15, 90) + ","  // Generating a random age
+                        + returnRandomIndexFromRange((int)firstPasTime, (int)lastPasTime) + "," // generating a random arrival time
+                        + returnRandomIndexFromProbDist(currentFloorPD) + "," // generating a random current floor
+                        + returnRandomIndexFromProbDist(distFloorFromGroundPD) + "\n"; // generating a random destination floor
+
+            generatedPassengers[i] = passenger;
+        }
+
+        // Writing the generated passengers into CSV file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path, false))) {
+            writer.write("Type,name,id,weight,age,arrivalTime,currentFloor,destinationFloor\n");
+            for (String person : generatedPassengers) {
+                writer.write(person);
+            }
+
+            System.out.println("String array successfully written to file: " + path);
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+
+
     }
 
-    private static int returnRandomIndexFromProbDist(double[] dist){
+    private static int returnRandomIndexFromProbDist(double[] dist) throws ArithmeticException{
+        if (Arrays.stream(dist).sum() != 1.0) throw new ArithmeticException("The sum of the probability distribution must be 1!");
+
+        // dist is a reference variable, to avoid changing it a temp copy is created.
+        double[] distCopy = dist.clone();
         double rand = Math.random();
-        for (int i = 0; i < dist.length; i++){
-            if (rand <= dist[i]) return i;
-            dist[i + 1] += dist[i];
+        for (int i = 0; i < distCopy.length; i++){
+            if (rand <= distCopy[i]) return i;
+            distCopy[i + 1] += distCopy[i];
         }
         return 0;
     }
@@ -103,10 +139,13 @@ public class Simulation {
     }
 
     private static String returnRandomName(){
-        String[] names = {"Khalid", "Ammar", "Fares", "Yones", "Anas", "Muhammed"};
+        String[] names = {"Khalid", "Ammar", "Fares", "Yones", "Anas", "Muhammed", "Al-Waleed",
+                "Sami", "Saud", "Marwan", "Thamer", "Mazen", "Hamad", "Rayan", "Salem", "Moath",
+                "Ahmad", "Talal", "Faisel", "Ali", "Ibrahim", "Mansoor", "Yahya", "Mousa", "Malak",
+                "Samir", "Fuad", "Hazem", "Rabeh", "Nasser", "Fawaz", "Bassam", "Sultan", "Sabeesh",
+                "Omar", "Riyadh", "Sulaim", "Salman", "Habeeb", "Loey", "Eyad", "Hamed", "Hazma"};
         int index;
         index = java.util.concurrent.ThreadLocalRandom.current().nextInt(names.length);
         return names[index];
     }
-
 }

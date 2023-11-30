@@ -1,5 +1,6 @@
 Type,name,id,weight,age,arrivalTime,currentFloor,destinationFloor
-Guest,Khaled Jaafari,2036103,62,23,401,1,5
-Guest,Sami,223132,75,25,33,0,8
-Guest,Rakan,244132,72,19,142,6,0
-Staff,Yazan,244321,52,22,10,0,7
+guest,Moath,14814,31,54,373,5,2
+guest,Ahmad,16975,110,84,678,5,5
+guest,Riyadh,11504,112,68,123,2,7
+guest,Salman,15303,76,71,147,6,7
+guest,Muhammed,11148,33,18,740,3,7

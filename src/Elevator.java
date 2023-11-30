@@ -1,5 +1,3 @@
-
-
 public class Elevator {
     private final int CAPACITY = 10;
     private final double MAX_WEIGHT = 700; // in kg
