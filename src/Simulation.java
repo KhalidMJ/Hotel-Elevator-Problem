@@ -7,17 +7,6 @@ import java.util.Arrays;
 public class Simulation {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
-        // main function well be removed later
-        /*
-        try {
-            String[][] data = getPassengersFromFile(path);
-            assert data != null;
-            Passenger[] passengers = turnPassengersArrayIntoObjects(data);
-            System.out.println(Arrays.toString(passengers));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        */
 
         generateRandomPassengersToFile(25, 15, 900, path);
 
