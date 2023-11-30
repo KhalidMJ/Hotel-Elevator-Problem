@@ -19,7 +19,7 @@ public class Floor {
         waitingPassengers.add(person);
         // Notify the elevator system that the call button has been pressed
         callButton.pressButton();
-        ElevatorSystem.notifyFloorCall(this);
+        //ElevatorSystem.notifyFloorCall(this); FIXME
         System.out.println("Passenger added to waiting list at Floor " + FLOOR_NUMBER);
     }
 
@@ -31,7 +31,7 @@ public class Floor {
         // Let waiting passengers enter the elevator
         for (Passenger passenger : waitingPassengers) {
             // Assuming there is a method in the Passenger class to enter the elevator
-            passenger.enterElevator();
+            // passenger.enterElevator(); FIXME
     }
         clearWaitingPassengers();
     }
@@ -59,7 +59,7 @@ public class Floor {
             e.printStackTrace();
         }
         // Press the call button after the delay
-        addPassenger(new Passenger());
+        // addPassenger(new Passenger()); FIXME
     }
 
     // Method to open elevator doors
