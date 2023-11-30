@@ -2,8 +2,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
-
 public class Simulation {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
@@ -73,6 +71,7 @@ public class Simulation {
         return passengerObjects;
     }
 
+    // Method to generate passengers data with random attributes and store them in CSV file
     public static void generateRandomPassengersToFile(int count, long firstPasTime, long lastPasTime, String path){
         String[] generatedPassengers = new String[count];
         String passenger;
@@ -110,6 +109,7 @@ public class Simulation {
 
     }
 
+    // Method to return an index based on a probability distribution given by user
     private static int returnRandomIndexFromProbDist(double[] dist) throws ArithmeticException{
         if (Arrays.stream(dist).sum() != 1.0) throw new ArithmeticException("The sum of the probability distribution must be 1!");
 
@@ -123,10 +123,12 @@ public class Simulation {
         return 0;
     }
 
+    // Method to return a random integer from a range.
     private static int returnRandomIndexFromRange(int min, int max){
         return java.util.concurrent.ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
+    // Method to return a random name string
     private static String returnRandomName(){
         String[] names = {"Khalid", "Ammar", "Fares", "Yones", "Anas", "Muhammed", "Al-Waleed",
                 "Sami", "Saud", "Marwan", "Thamer", "Mazen", "Hamad", "Rayan", "Salem", "Moath",
