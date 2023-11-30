@@ -6,7 +6,7 @@ public class Simulation {
     public static void main(String[] args){
         String path = "src/Passengers.csv";
 
-        generateRandomPassengersToFile(25, 15, 900, path);
+        generateRandomPassengersToFile(50, 10, 900, path);
 
     }
 // Method to extract passengers data form a csv file and store them into a 2D array
@@ -134,7 +134,10 @@ public class Simulation {
                 "Sami", "Saud", "Marwan", "Thamer", "Mazen", "Hamad", "Rayan", "Salem", "Moath",
                 "Ahmad", "Talal", "Faisel", "Ali", "Ibrahim", "Mansoor", "Yahya", "Mousa", "Malak",
                 "Samir", "Fuad", "Hazem", "Rabeh", "Nasser", "Fawaz", "Bassam", "Sultan", "Sabeesh",
-                "Omar", "Riyadh", "Sulaim", "Salman", "Habeeb", "Loey", "Eyad", "Hamed", "Hazma"};
+                "Omar", "Riyadh", "Sulaim", "Salman", "Habeeb", "Loey", "Eyad", "Hamed", "Hazma",
+                "Husam", "Amjad", "Asaad", "Basem", "Bilal", "Hazem", "Hassan", "Jawad", "Jihad",
+                "Osama", "Suhaib", "Hadi", "Fayez", "Mubark", "Meshal", "Hatem", "Ayham", "Sari",
+                "Basel", "Rakan", "Badar", "Fahad", "Yazeed", "Suheil", "Thabet", "Ramiz", "Yasser"};
         int index;
         index = java.util.concurrent.ThreadLocalRandom.current().nextInt(names.length);
         return names[index];
