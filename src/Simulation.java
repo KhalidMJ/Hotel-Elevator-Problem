@@ -4,10 +4,11 @@ import java.util.Arrays;
 
 public class Simulation {
     public static void main(String[] args){
-        String path = "src/Passengers.csv";
 
-        generateRandomPassengersToFile(50, 10, 900, path);
-
+        for(int i = 0; i< 20; i++){
+            System.out.println(i);
+            delay(1);
+        }
     }
 // Method to extract passengers data form a csv file and store them into a 2D array
     public static String[][] getPassengersFromFile(String path) {
@@ -142,4 +143,13 @@ public class Simulation {
         index = java.util.concurrent.ThreadLocalRandom.current().nextInt(names.length);
         return names[index];
     }
+
+    // This method will simulate a passage of time
+    public static void delay(int seconds){
+        long targetTime = System.currentTimeMillis() + (1000 * (long) seconds);
+
+        // Loop will be running until required delay time is passed
+        while (System.currentTimeMillis() < targetTime){}
+    }
 }
+
