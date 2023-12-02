@@ -29,13 +29,15 @@ public class Elevator {
         // Assertions TODO: change it into an exception
         assert (level >= 0 && level <= 7) : "The elevator is bound to move between 0 and 7 floors only";
         assert this.doorsStatus == DoorsStatus.CLOSED : "The doors are not closed";
+
         // Check the target floor and start moving the elevator
-        Simulation.delay(this.SPEED); // Simulating the speed of the elevator (seconds per floor)
         if (level > this.currentFloor) {
             this.elevatorStatus = ElevatorStatus.MOVING_UP;
+            Simulation.delay(this.SPEED);
             this.currentFloor++;
         } else {
             this.elevatorStatus = ElevatorStatus.MOVING_DOWN;
+            Simulation.delay(this.SPEED);
             this.currentFloor--;
         }
 
@@ -92,7 +94,7 @@ public class Elevator {
         this.currentFloor = currentFloor;
     }
 
-    public ElevatorStatus getelevatorStatus() {
+    public ElevatorStatus getElevatorStatus() {
         return elevatorStatus;
     }
 
@@ -100,7 +102,7 @@ public class Elevator {
         this.elevatorStatus = elevatorStatus;
     }
 
-    public DoorsStatus getdoorsStatus() {
+    public DoorsStatus getDoorsStatus() {
         return doorsStatus;
     }
 
