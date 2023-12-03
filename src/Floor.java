@@ -20,7 +20,6 @@ public class Floor {
         // Notify the elevator system that the call button has been pressed
         callButton.pressButton();
         //ElevatorSystem.notifyFloorCall(this); FIXME
-        System.out.println("Passenger added to waiting list at Floor " + FLOOR_NUMBER);
     }
 
     // Method to handle elevator arrival at the floor
@@ -42,19 +41,16 @@ public class Floor {
     // Method to clear the waiting passengers list after they have entered the elevator
     private void clearWaitingPassengers() {
         waitingPassengers.clear();
-        System.out.println("Waiting passengers cleared at Floor " + FLOOR_NUMBER);
     }
 
     // Method to open elevator doors
     private void openDoors() {
         // Additional logic for opening doors can be added here
-        System.out.println("Doors open at Floor " + FLOOR_NUMBER);
     }
 
     // Method to close elevator doors
     private void closeDoors() {
         // Additional logic for closing doors can be added here
-        System.out.println("Doors close at Floor " + FLOOR_NUMBER);
     }
 
     // Method to get the number of waiting passengers
