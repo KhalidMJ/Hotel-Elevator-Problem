@@ -27,6 +27,7 @@ public class Elevator {
         if (level == this.currentFloor) {
             pause();
             openDoors();
+            currentHotel.getFloors()[currentFloor].elevatorArrival(this); // Notify the floor that the elevator arrived and is ready
             return;
         } else if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
             closeDoors();
@@ -74,6 +75,7 @@ public class Elevator {
         if ((this.currentPassengers.size() < CAPACITY) && (passenger.getWeight() + this.totalCurrentPassengersWeight < MAX_WEIGHT)){
             currentPassengers.add(passenger);
             totalCurrentPassengersWeight += passenger.getWeight();
+            Simulation.delay(1); // Each passenger would take around 1 second to enter the elevator TODO make this a constant
             return true;
         }
         return false;
@@ -82,6 +84,7 @@ public class Elevator {
     public void unloadPassenger(Passenger passenger){
         currentPassengers.remove(passenger);
         totalCurrentPassengersWeight -= passenger.getWeight();
+        Simulation.delay(1); // Each passenger would take around 1 second to leave the elevator TODO: make this a constant
     }
 
     // Setters/Getters -------------------------------------

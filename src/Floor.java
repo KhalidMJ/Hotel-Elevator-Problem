@@ -29,32 +29,20 @@ public class Floor {
         for (Passenger passenger : waitingPassengers) {
             if (elevator.loadPassenger(passenger)) waitingPassengers.remove(passenger); // If the passenger is loaded to the elevator, delete him from the list
         }
+        elevatorDeparture();
     }
 
     // Method to handle elevator departure from the floor
     public void elevatorDeparture() {
-        System.out.println("Elevator departing from Floor " + FLOOR_NUMBER);
         closeDoors();
         // Reset the call button after the elevator departs
-        callButton.resetButton();
+        if (waitingPassengers.isEmpty()) callButton.resetButton(); // reset the button if there is no more waiting passengers
     }
 
     // Method to clear the waiting passengers list after they have entered the elevator
     private void clearWaitingPassengers() {
         waitingPassengers.clear();
         System.out.println("Waiting passengers cleared at Floor " + FLOOR_NUMBER);
-    }
-
-    // Method to simulate the time taken for a passenger to press the call button
-    public void simulatePassengerPressingButton() {
-        // Simulate some delay before the passenger presses the button
-        try {
-            Thread.sleep(1000); // 1 second delay
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        // Press the call button after the delay
-        // addPassenger(new Passenger()); FIXME
     }
 
     // Method to open elevator doors
