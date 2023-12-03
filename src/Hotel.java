@@ -10,7 +10,7 @@ public class Hotel {
         }
 
         elevators = new Elevator[elevatorsCount];
-        for (int i = 0; i < floorCount; i++){
+        for (int i = 0; i < elevatorsCount; i++){
             elevators[i] = new Elevator();
             elevators[i].setCurrentHotel(this);
         }
