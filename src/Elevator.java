@@ -1,18 +1,21 @@
+import java.util.ArrayList;
+
 public class Elevator {
     private final int CAPACITY = 10;
     private final double MAX_WEIGHT = 700; // in kg
-    private final int SPEED = 3; // seconds per floor
+    private final int SPEED = 2; // seconds per floor
 
     private int currentFloor;
-    private Passenger[] currentPassengers;
+    private ArrayList<Passenger> currentPassengers;
     private CabButtons cabButtons;
 
     private ElevatorStatus elevatorStatus;
     private DoorsStatus doorsStatus;
+    private double totalCurrentPassengersWeight;
 
     public Elevator(){
         this.currentFloor = 0;
-        this.currentPassengers = new Passenger[this.CAPACITY];
+        this.currentPassengers = new ArrayList<>();
         this.cabButtons = new CabButtons();
         this.elevatorStatus = ElevatorStatus.IDLE;
         this.doorsStatus = DoorsStatus.OPEN;
@@ -22,8 +25,9 @@ public class Elevator {
         // Base case: Elevator is already at the wanted level
         if (level == this.currentFloor) {
             pause();
+            openDoors();
             return;
-        } else if (this.doorsStatus != DoorsStatus.CLOSED){
+        } else if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
             closeDoors();
         }
         // Assertions TODO: change it into an exception
@@ -49,7 +53,6 @@ public class Elevator {
     public void pause(){
         this.elevatorStatus = ElevatorStatus.IDLE;
         System.out.print(this); // TODO delete this, was used for testing only
-        openDoors();
     }
 
     // Method to open the doors of the elevator and update the doors status
@@ -57,19 +60,31 @@ public class Elevator {
         if (this.doorsStatus == DoorsStatus.OPEN) return; // if doors already open, do nothing
         this.doorsStatus = DoorsStatus.OPENING;
         System.out.print(this); // // TODO delete this, was used for testing only
-        Simulation.delay(2); // It would take the doors 2 seconds to be fully open
+        Simulation.delay(1); // It would take the doors 2 seconds to be fully open
         this.doorsStatus = DoorsStatus.OPEN;
         System.out.print(this); // // TODO delete this, was used for testing only
     }
 
     // Method to open the doors of the elevator and update the doors status
-    public void  closeDoors(){
+    public void closeDoors(){
         if (this.doorsStatus == DoorsStatus.CLOSED) return; // if doors already closed, do nothing
         this.doorsStatus = DoorsStatus.CLOSING;
         System.out.print(this); // TODO delete this
-        Simulation.delay(2); // It would take the doors 2 seconds to be fully closed
+        Simulation.delay(1); // It would take the doors 2 seconds to be fully closed
         this.doorsStatus = DoorsStatus.CLOSED;
         System.out.print(this); // TODO delete this
+    }
+
+    public void loadPassenger(Passenger passenger){
+        if ((this.currentPassengers.size() < CAPACITY) && (passenger.getWeight() + this.totalCurrentPassengersWeight < MAX_WEIGHT)){
+            currentPassengers.add(passenger);
+            totalCurrentPassengersWeight += passenger.getWeight();
+        }
+    }
+
+    public void unloadPassenger(Passenger passenger){
+        currentPassengers.remove(passenger);
+        totalCurrentPassengersWeight -= passenger.getWeight();
     }
 
     // Setters/Getters -------------------------------------
