@@ -4,11 +4,19 @@ public class Hotel {
     private int elevatorCount;
     private Elevator[] elevators;
 
-    public Hotel(Floor[] floors, Elevator[] elevators) {
-        this.floors = floors;
-        this.elevators = elevators;
-        this.floorCount = this.floors.length;
-        this.elevatorCount = this.elevators.length;
+    public Hotel(int floorCount, int elevatorsCount) {
+        this.floorCount = floorCount;
+        this.elevatorCount = elevatorsCount;
+
+        floors = new Floor[floorCount];
+        for (int i = 0; i < this.floorCount; i++){
+            floors[i] = new Floor(i, "Normal");
+        }
+
+        elevators = new Elevator[elevatorCount];
+        for (int i = 0; i < this.floorCount; i++){
+            elevators[i] = new Elevator();
+        }
     }
 
     public int getFloorCount() {
