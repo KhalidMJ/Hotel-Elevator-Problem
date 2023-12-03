@@ -24,16 +24,11 @@ public class Floor {
     }
 
     // Method to handle elevator arrival at the floor
-    public void elevatorArrival() {
-        // Additional logic for handling elevator arrival can be added here
-        System.out.println("Elevator has arrived at Floor " + FLOOR_NUMBER);
-        openDoors();
+    public void elevatorArrival(Elevator elevator) {
         // Let waiting passengers enter the elevator
         for (Passenger passenger : waitingPassengers) {
-            // Assuming there is a method in the Passenger class to enter the elevator
-            // passenger.enterElevator(); FIXME
-    }
-        clearWaitingPassengers();
+            if (elevator.loadPassenger(passenger)) waitingPassengers.remove(passenger); // If the passenger is loaded to the elevator, delete him from the list
+        }
     }
 
     // Method to handle elevator departure from the floor

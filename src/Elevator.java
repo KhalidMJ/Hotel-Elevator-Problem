@@ -26,6 +26,7 @@ public class Elevator {
         if (level == this.currentFloor) {
             pause();
             openDoors();
+
             return;
         } else if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
             closeDoors();
@@ -45,41 +46,37 @@ public class Elevator {
             this.currentFloor--;
         }
 
-        System.out.print(this); // TODO delete this, was used for testing only
         moveTo(level);
     }
 
     // Method to pause the elevator and update its status
     public void pause(){
         this.elevatorStatus = ElevatorStatus.IDLE;
-        System.out.print(this); // TODO delete this, was used for testing only
     }
 
     // Method to open the doors of the elevator and update the doors status
     public void openDoors(){
         if (this.doorsStatus == DoorsStatus.OPEN) return; // if doors already open, do nothing
         this.doorsStatus = DoorsStatus.OPENING;
-        System.out.print(this); // // TODO delete this, was used for testing only
         Simulation.delay(1); // It would take the doors 2 seconds to be fully open
         this.doorsStatus = DoorsStatus.OPEN;
-        System.out.print(this); // // TODO delete this, was used for testing only
     }
 
     // Method to open the doors of the elevator and update the doors status
     public void closeDoors(){
         if (this.doorsStatus == DoorsStatus.CLOSED) return; // if doors already closed, do nothing
         this.doorsStatus = DoorsStatus.CLOSING;
-        System.out.print(this); // TODO delete this
         Simulation.delay(1); // It would take the doors 2 seconds to be fully closed
         this.doorsStatus = DoorsStatus.CLOSED;
-        System.out.print(this); // TODO delete this
     }
-
-    public void loadPassenger(Passenger passenger){
+    //  Method to load a passenger to the elevator, it returns true if the loading is completed, false if elevator rejected the passenger
+    public boolean loadPassenger(Passenger passenger){
         if ((this.currentPassengers.size() < CAPACITY) && (passenger.getWeight() + this.totalCurrentPassengersWeight < MAX_WEIGHT)){
             currentPassengers.add(passenger);
             totalCurrentPassengersWeight += passenger.getWeight();
+            return true;
         }
+        return false;
     }
 
     public void unloadPassenger(Passenger passenger){
