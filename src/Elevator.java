@@ -5,6 +5,7 @@ public class Elevator {
     private final double MAX_WEIGHT = 700; // in kg
     private final int SPEED = 2; // seconds per floor
 
+    private Hotel currentHotel; // A reference to the hotel that this elevator belong to
     private int currentFloor;
     private ArrayList<Passenger> currentPassengers;
     private CabButtons cabButtons;
@@ -26,7 +27,6 @@ public class Elevator {
         if (level == this.currentFloor) {
             pause();
             openDoors();
-
             return;
         } else if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
             closeDoors();
@@ -120,6 +120,10 @@ public class Elevator {
 
     public void setDoorsStatus(DoorsStatus doorsStatus) {
         this.doorsStatus = doorsStatus;
+    }
+
+    public void setCurrentHotel(Hotel hotel){
+        this.currentHotel = hotel;
     }
 
     @Override
