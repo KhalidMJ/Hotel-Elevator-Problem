@@ -78,8 +78,8 @@ public class Simulation {
         String passenger;
         // Probability Distributions
         double[] currentFloorPD = {0.35, 0.10, 0.10, 0.09, 0.09, 0.09, 0.09, 0.09};
-        double[] distFloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
-        double[] distFloorFromGroundPD = {0.00, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.10};
+        double[] FloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
+        double[] FloorFromGroundPD = {0.00, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.10};
 
         // Generating Random Passengers
         for (int i = 0; i < count; i++){ //FIXME: A passenger can have the same current and destination floors.
@@ -90,7 +90,7 @@ public class Simulation {
                         + returnRandomIndexFromRange(15, 90) + ","  // Generating a random age
                         + returnRandomIndexFromRange((int)firstPasTime, (int)lastPasTime) + "," // generating a random arrival time
                         + returnRandomIndexFromProbDist(currentFloorPD) + "," // generating a random current floor
-                        + returnRandomIndexFromProbDist(distFloorFromGroundPD) + "\n"; // generating a random destination floor
+                        + returnRandomIndexFromProbDist(FloorFromGroundPD) + "\n"; // generating a random destination floor
 
             generatedPassengers[i] = passenger;
         }
@@ -125,7 +125,7 @@ public class Simulation {
     }
 
     // Method to return a random integer from a range.
-    private static int returnRandomIndexFromRange(int min, int max){
+    public static int returnRandomIndexFromRange(int min, int max){
         return java.util.concurrent.ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
@@ -145,11 +145,12 @@ public class Simulation {
     }
 
     // This method will simulate a passage of time
-    public static void delay(int seconds){
-        long targetTime = System.currentTimeMillis() + (1000 * (long) seconds);
-
-        // Loop will be running until required delay time is passed
-        while (System.currentTimeMillis() < targetTime){}
+    public static void delay(double seconds){
+        try {
+            Thread.sleep((long)(seconds * 1000));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
