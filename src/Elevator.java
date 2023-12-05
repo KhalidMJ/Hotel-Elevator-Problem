@@ -1,43 +1,93 @@
-
+import java.util.ArrayList;
 
 public class Elevator {
     private final int CAPACITY = 10;
     private final double MAX_WEIGHT = 700; // in kg
-    private final int SPEED = 3; // seconds per floor
+    private final int SPEED = 2; // seconds per floor
 
+    private Hotel currentHotel; // A reference to the hotel that this elevator belong to
     private int currentFloor;
-    private Passenger[] currentPassengers;
+    private ArrayList<Passenger> currentPassengers;
     private CabButtons cabButtons;
 
     private ElevatorStatus elevatorStatus;
     private DoorsStatus doorsStatus;
+    private double totalCurrentPassengersWeight;
 
     public Elevator(){
         this.currentFloor = 0;
-        this.currentPassengers = new Passenger[this.CAPACITY];
+        this.currentPassengers = new ArrayList<>();
         this.cabButtons = new CabButtons();
         this.elevatorStatus = ElevatorStatus.IDLE;
-        this.doorsStatus = DoorsStatus.CLOSED;
-
+        this.doorsStatus = DoorsStatus.OPEN;
     }
-
+    // Recursive Method to move the elevator to a requested floor
     public void moveTo(int level){
+        // Base case: Elevator is already at the wanted level
+        if (level == this.currentFloor) {
+            pause();
+            openDoors();
+            currentHotel.getFloors()[currentFloor].elevatorArrival(this); // Notify the floor that the elevator arrived and is ready
+            return;
+        } else if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
+            closeDoors();
+        }
+        // Assertions TODO: change it into an exception
+        assert (level >= 0 && level <= 7) : "The elevator is bound to move between 0 and 7 floors only";
+        assert this.doorsStatus == DoorsStatus.CLOSED : "The doors are not closed";
 
+        // Check the target floor and start moving the elevator
+        if (level > this.currentFloor) {
+            this.elevatorStatus = ElevatorStatus.MOVING_UP;
+            Simulation.delay(this.SPEED);
+            this.currentFloor++;
+        } else {
+            this.elevatorStatus = ElevatorStatus.MOVING_DOWN;
+            Simulation.delay(this.SPEED);
+            this.currentFloor--;
+        }
+
+        moveTo(level);
     }
+
+    // Method to pause the elevator and update its status
     public void pause(){
-
+        this.elevatorStatus = ElevatorStatus.IDLE;
     }
 
+    // Method to open the doors of the elevator and update the doors status
     public void openDoors(){
-
+        if (this.doorsStatus == DoorsStatus.OPEN) return; // if doors already open, do nothing
+        this.doorsStatus = DoorsStatus.OPENING;
+        Simulation.delay(1); // It would take the doors 2 seconds to be fully open
+        this.doorsStatus = DoorsStatus.OPEN;
     }
 
-    public void  closeDoors(){
+    // Method to open the doors of the elevator and update the doors status
+    public void closeDoors(){
+        if (this.doorsStatus == DoorsStatus.CLOSED) return; // if doors already closed, do nothing
+        this.doorsStatus = DoorsStatus.CLOSING;
+        Simulation.delay(1); // It would take the doors 2 seconds to be fully closed
+        this.doorsStatus = DoorsStatus.CLOSED;
+    }
+    //  Method to load a passenger to the elevator, it returns true if the loading is completed, false if elevator rejected the passenger
+    public boolean loadPassenger(Passenger passenger){
+        if ((this.currentPassengers.size() < CAPACITY) && (passenger.getWeight() + this.totalCurrentPassengersWeight < MAX_WEIGHT)){
+            currentPassengers.add(passenger);
+            totalCurrentPassengersWeight += passenger.getWeight();
+            Simulation.delay(1); // Each passenger would take around 1 second to enter the elevator TODO make this a constant
+            return true;
+        }
+        return false;
+    }
 
+    public void unloadPassenger(Passenger passenger){
+        currentPassengers.remove(passenger);
+        totalCurrentPassengersWeight -= passenger.getWeight();
+        Simulation.delay(1); // Each passenger would take around 1 second to leave the elevator TODO: make this a constant
     }
 
     // Setters/Getters -------------------------------------
-
 
     public int getCAPACITY() {
         return CAPACITY;
@@ -59,7 +109,7 @@ public class Elevator {
         this.currentFloor = currentFloor;
     }
 
-    public ElevatorStatus elevatorStatus() {
+    public ElevatorStatus getElevatorStatus() {
         return elevatorStatus;
     }
 
@@ -67,7 +117,7 @@ public class Elevator {
         this.elevatorStatus = elevatorStatus;
     }
 
-    public DoorsStatus doorsStatus() {
+    public DoorsStatus getDoorsStatus() {
         return doorsStatus;
     }
 
@@ -75,9 +125,13 @@ public class Elevator {
         this.doorsStatus = doorsStatus;
     }
 
+    public void setCurrentHotel(Hotel hotel){
+        this.currentHotel = hotel;
+    }
+
     @Override
     public String toString() {
-        return "This elevator is at " + this.currentFloor;
+        return "This elevator is at " + this.currentFloor + " and it is " + elevatorStatus + ", the doors are " + this.doorsStatus + "\r";
     }
 }
 

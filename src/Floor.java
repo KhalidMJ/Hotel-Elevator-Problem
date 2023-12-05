@@ -17,6 +17,40 @@ public class Floor {
     // Method to add a passenger to the waiting list
     public void addPassenger(Passenger person) {
         waitingPassengers.add(person);
+        // Notify the elevator system that the call button has been pressed
+        callButton.pressButton();
+        //ElevatorSystem.notifyFloorCall(this); FIXME
+    }
+
+    // Method to handle elevator arrival at the floor
+    public void elevatorArrival(Elevator elevator) {
+        // Let waiting passengers enter the elevator
+        for (Passenger passenger : waitingPassengers) {
+            if (elevator.loadPassenger(passenger)) waitingPassengers.remove(passenger); // If the passenger is loaded to the elevator, delete him from the list
+        }
+        elevatorDeparture();
+    }
+
+    // Method to handle elevator departure from the floor
+    public void elevatorDeparture() {
+        closeDoors();
+        // Reset the call button after the elevator departs
+        if (waitingPassengers.isEmpty()) callButton.resetButton(); // reset the button if there is no more waiting passengers
+    }
+
+    // Method to clear the waiting passengers list after they have entered the elevator
+    private void clearWaitingPassengers() {
+        waitingPassengers.clear();
+    }
+
+    // Method to open elevator doors
+    private void openDoors() {
+        // Additional logic for opening doors can be added here
+    }
+
+    // Method to close elevator doors
+    private void closeDoors() {
+        // Additional logic for closing doors can be added here
     }
 
     // Method to get the number of waiting passengers
