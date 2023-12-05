@@ -24,5 +24,9 @@ public class Staff extends Passenger implements RequestElevator{
     public void requestDown() {
         this.destinationFloor = this.currentFloor - 1;
     }
+
+    public void hasArrived(){
+
+    }
 }
 
