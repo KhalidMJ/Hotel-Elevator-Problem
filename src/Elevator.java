@@ -17,7 +17,7 @@ public class Elevator {
     public Elevator(){
         this.currentFloor = 0;
         this.currentPassengers = new ArrayList<>();
-        this.cabButtons = new CabButtons();
+        this.cabButtons = new CabButtons(8);
         this.elevatorStatus = ElevatorStatus.IDLE;
         this.doorsStatus = DoorsStatus.OPEN;
     }
