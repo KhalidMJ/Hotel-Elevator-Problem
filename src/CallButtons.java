@@ -5,7 +5,7 @@
 import java.util.Scanner;
 public class CallButtons extends ControlButtons{
 
-    private static final int GROUND_FLOOR = 0; // the Ground floor in the hotel
+    private static final int GROUND_FLOOR = 1; // the Ground floor in the hotel
     private static final int TOP_FLOOR = 8 ; // the top floor in the hotel
 
     // Current Floor
@@ -14,6 +14,13 @@ public class CallButtons extends ControlButtons{
     // Scanner for user input
     private Scanner scanner = new Scanner(System.in);
 
+    private void displayCurrentFloor(){
+        System.out.println("Current floor: (1-" + currentFloor + "):");
+
+    }
+    private int selectFloor(){
+        System.out.println("Enter desired floor "+ TOP_FLOOR);
+    }
 
 
 }
