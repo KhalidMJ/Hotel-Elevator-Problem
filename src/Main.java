@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import java.util.Arrays;
 
 public class Main extends Application {
     private static Hotel hotel;
@@ -25,6 +26,16 @@ public class Main extends Application {
         elevator1 = hotel.getElevators()[0];
         elevator2 = hotel.getElevators()[1];
 
+        // generating and importing passengers
+        String path = "src/Passengers.csv";
+        try {
+            Simulation.generateRandomPassengersToFile(50, 10, 650, path);
+            String[][] passengersData = Simulation.getPassengersFromFile(path);
+            Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
+            System.out.println(Arrays.toString(passengers));
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         launch(args);
     }
 
@@ -65,6 +76,9 @@ public class Main extends Application {
     private static void elevatorRun(Elevator elevator) {
         while (true) {
             elevator.moveTo(5);
+            elevator.moveTo(0);
+            elevator.moveTo(1);
+            elevator.moveTo(2);
             //elevator.checkRequests();
             //elevator.moveTo(elevator.getPath[0]);
             //elevator.unloadPassengers();

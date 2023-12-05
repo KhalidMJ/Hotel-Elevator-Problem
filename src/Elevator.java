@@ -23,13 +23,20 @@ public class Elevator {
     }
     // Recursive Method to move the elevator to a requested floor
     public void moveTo(int level){
-        // Base case: Elevator is already at the wanted level
+        // Base case: Elevator is already at the wanted level OR There is a passenger who want to get off on the current floor
         if (level == this.currentFloor) {
             pause();
             openDoors();
             currentHotel.getFloors()[currentFloor].elevatorArrival(this); // Notify the floor that the elevator arrived and is ready
             return;
-        } else if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
+        }
+        if (cabButtons.buttonsStatus[this.currentFloor]){ // Stop if the cab button of the current floor is clicked
+            pause();
+            openDoors();
+            currentHotel.getFloors()[currentFloor].elevatorArrival(this);
+        }
+
+        if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
             closeDoors();
         }
         // Assertions TODO: change it into an exception
@@ -46,7 +53,6 @@ public class Elevator {
             Simulation.delay(this.SPEED);
             this.currentFloor--;
         }
-
         moveTo(level);
     }
 
@@ -59,7 +65,7 @@ public class Elevator {
     public void openDoors(){
         if (this.doorsStatus == DoorsStatus.OPEN) return; // if doors already open, do nothing
         this.doorsStatus = DoorsStatus.OPENING;
-        Simulation.delay(1); // It would take the doors 2 seconds to be fully open
+        Simulation.delay(1); // It would take the doors 1 seconds to be fully open
         this.doorsStatus = DoorsStatus.OPEN;
     }
 
@@ -67,7 +73,7 @@ public class Elevator {
     public void closeDoors(){
         if (this.doorsStatus == DoorsStatus.CLOSED) return; // if doors already closed, do nothing
         this.doorsStatus = DoorsStatus.CLOSING;
-        Simulation.delay(1); // It would take the doors 2 seconds to be fully closed
+        Simulation.delay(1); // It would take the doors 1 seconds to be fully closed
         this.doorsStatus = DoorsStatus.CLOSED;
     }
     //  Method to load a passenger to the elevator, it returns true if the loading is completed, false if elevator rejected the passenger
@@ -75,7 +81,6 @@ public class Elevator {
         if ((this.currentPassengers.size() < CAPACITY) && (passenger.getWeight() + this.totalCurrentPassengersWeight < MAX_WEIGHT)){
             currentPassengers.add(passenger);
             totalCurrentPassengersWeight += passenger.getWeight();
-            Simulation.delay(1); // Each passenger would take around 1 second to enter the elevator TODO make this a constant
             return true;
         }
         return false;
@@ -83,8 +88,8 @@ public class Elevator {
 
     public void unloadPassenger(Passenger passenger){
         currentPassengers.remove(passenger);
+        passenger.hasArrived();
         totalCurrentPassengersWeight -= passenger.getWeight();
-        Simulation.delay(1); // Each passenger would take around 1 second to leave the elevator TODO: make this a constant
     }
 
     // Setters/Getters -------------------------------------
@@ -107,6 +112,10 @@ public class Elevator {
 
     public void setCurrentFloor(int currentFloor) {
         this.currentFloor = currentFloor;
+    }
+
+    public ArrayList<Passenger> getCurrentPassengers(){
+        return currentPassengers;
     }
 
     public ElevatorStatus getElevatorStatus() {

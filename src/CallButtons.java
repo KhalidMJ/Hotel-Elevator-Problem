@@ -1,3 +1,19 @@
+/*
+ this class is about the up and down buttons (the outside buttons )
+ */
+
+import java.util.Scanner;
 public class CallButtons extends ControlButtons{
+
+    private static final int GROUND_FLOOR = 0; // the Ground floor in the hotel
+    private static final int TOP_FLOOR = 8 ; // the top floor in the hotel
+
+    // Current Floor
+    private static final int currentFloor = GROUND_FLOOR;
+
+    // Scanner for user input
+    private Scanner scanner = new Scanner(System.in);
+
+
 
 }

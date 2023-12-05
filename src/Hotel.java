@@ -1,6 +1,7 @@
 public class Hotel {
     private Floor[] floors;
     private Elevator[] elevators;
+    private Passenger[] passengers;
 
     public Hotel(int floorCount, int elevatorsCount) {
 
@@ -16,6 +17,9 @@ public class Hotel {
         }
     }
 
+    public void setPassengers(Passenger[] passengers){
+        this.passengers = passengers;
+    }
     public Floor[] getFloors() {
         return this.floors;
     }

@@ -5,11 +5,8 @@ import java.util.Arrays;
 public class Simulation {
     public static void main(String[] args){
 
-        for(int i = 0; i< 20; i++){
-            System.out.println(i);
-            delay(1);
         }
-    }
+
 // Method to extract passengers data form a csv file and store them into a 2D array
     public static String[][] getPassengersFromFile(String path) {
         try {
@@ -43,6 +40,8 @@ public class Simulation {
 
     // Method to create Passenger objects using the data from 2D array and return them in an array.
     public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData) throws IOException {
+        if (passengersData == null) return null;
+
         int count = passengersData.length;
         String name, id;
         double weight;
