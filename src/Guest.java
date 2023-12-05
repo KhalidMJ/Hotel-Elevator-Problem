@@ -38,4 +38,9 @@ public class Guest extends Passenger implements RequestElevator{
     public int destinationFloor() {
         return this.destinationFloor;
     }
+
+    public void hasArrived(){
+
+    }
 }
+

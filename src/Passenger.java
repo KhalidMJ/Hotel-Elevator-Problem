@@ -19,6 +19,8 @@ public abstract class Passenger {
         this.age = 25;
     }
 
+    public abstract void hasArrived();
+
     public String getName() {
         return this.name;
     }

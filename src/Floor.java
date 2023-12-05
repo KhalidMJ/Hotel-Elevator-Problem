@@ -24,9 +24,18 @@ public class Floor {
 
     // Method to handle elevator arrival at the floor
     public void elevatorArrival(Elevator elevator) {
+        // Let arrived passengers leave the elevator
+        for (Passenger passenger: elevator.getCurrentPassengers()){
+            if (passenger.getDestinationFloor() == elevator.getCurrentFloor()){
+                elevator.unloadPassenger(passenger);
+                passenger.exitElevator(); // TODO
+            }
+        }
         // Let waiting passengers enter the elevator
         for (Passenger passenger : waitingPassengers) {
+            // Checking if loading the passengers is successful, meaning that there is enough capacity
             if (elevator.loadPassenger(passenger)) waitingPassengers.remove(passenger); // If the passenger is loaded to the elevator, delete him from the list
+            passenger.enterElevator(); //TODO
         }
         elevatorDeparture();
     }
