@@ -3,7 +3,8 @@
  */
 
 import java.util.Scanner;
-public class CallButtons extends ControlButtons{
+public class CallButtons extends ControlButtons implements RequestElevator
+{
 
     private static final int GROUND_FLOOR = 1; // the Ground floor in the hotel
     private static final int TOP_FLOOR = 8 ; // the top floor in the hotel
@@ -23,4 +24,13 @@ public class CallButtons extends ControlButtons{
     }
 
 
+    @Override
+    public void requestUp() {
+
+    }
+
+    @Override
+    public void requestDown() {
+
+    }
 }
