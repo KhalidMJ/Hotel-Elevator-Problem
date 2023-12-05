@@ -2,7 +2,7 @@
 // ControlButtons class has these attributes:
 public abstract class ControlButtons {
         int ButtonsCount;
-        boolean buttonsStatus;
+        boolean[] buttonsStatus;  // 
 
 
         public ControlButtons(){
@@ -17,7 +17,7 @@ public abstract class ControlButtons {
         }
 
         // this method will return the buttons' status
-        public boolean getButtonsStatus() {
+        public boolean[] getButtonsStatus() {
             return buttonsStatus;
         }
         // this method to clear buttons
