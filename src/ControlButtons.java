@@ -4,6 +4,13 @@ public abstract class ControlButtons {
         int ButtonsCount;
         boolean buttonsStatus;
 
+
+        public ControlButtons(){
+
+
+        }
+
+
         // this method return the number of control buttons
         public int getButtonsCount() {
             return ButtonsCount;
@@ -17,7 +24,12 @@ public abstract class ControlButtons {
         public void ClearButtons(){
             return;
         }
-    }
+
+        
+
+
+
+}
 
 
 
