@@ -27,13 +27,13 @@ public class Elevator {
         if (level == this.currentFloor) {
             pause();
             openDoors();
-            currentHotel.getFloors()[currentFloor].elevatorArrival(this); // Notify the floor that the elevator arrived and is ready
+            //currentHotel.getFloors()[currentFloor].elevatorArrival(this); // Notify the floor that the elevator arrived and is ready
             return;
         }
         if (cabButtons.buttonsStatus[this.currentFloor]){ // Stop if the cab button of the current floor is clicked
             pause();
             openDoors();
-            currentHotel.getFloors()[currentFloor].elevatorArrival(this);
+            //currentHotel.getFloors()[currentFloor].elevatorArrival(this);
         }
 
         if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open

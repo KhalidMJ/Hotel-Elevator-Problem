@@ -78,7 +78,7 @@ public class Simulation {
         // Probability Distributions
         double[] currentFloorPD = {0.35, 0.10, 0.10, 0.09, 0.09, 0.09, 0.09, 0.09};
         double[] FloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
-        double[] FloorFromGroundPD = {0.00, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.10};
+        double[] FloorFromGroundPD = {0.00, 0.15, 0.14, 0.14, 0.14, 0.14, 0.14, 0.14};
 
         // Generating Random Passengers
         for (int i = 0; i < count; i++){ //FIXME: A passenger can have the same current and destination floors.

@@ -29,7 +29,7 @@ public class Main extends Application {
         // generating and importing passengers
         String path = "src/Passengers.csv";
         try {
-            Simulation.generateRandomPassengersToFile(50, 10, 650, path);
+            Simulation.generateRandomPassengersToFile(150, 2, 900, path);
             String[][] passengersData = Simulation.getPassengersFromFile(path);
             Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
             System.out.println(Arrays.toString(passengers));
@@ -75,10 +75,8 @@ public class Main extends Application {
 
     private static void elevatorRun(Elevator elevator) {
         while (true) {
-            elevator.moveTo(5);
-            elevator.moveTo(0);
-            elevator.moveTo(1);
-            elevator.moveTo(2);
+            elevator.moveTo(Simulation.returnRandomIndexFromRange(0, 7));
+            Simulation.delay(3);
             //elevator.checkRequests();
             //elevator.moveTo(elevator.getPath[0]);
             //elevator.unloadPassengers();
