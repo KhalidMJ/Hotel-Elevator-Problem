@@ -33,7 +33,7 @@ public class Elevator {
         if (cabButtons.buttonsStatus[this.currentFloor]){ // Stop if the cab button of the current floor is clicked
             pause();
             openDoors();
-            //currentHotel.getFloors()[currentFloor].elevatorArrival(this);
+            currentHotel.getFloors()[currentFloor].elevatorArrival(this);
         }
 
         if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
