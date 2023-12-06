@@ -10,13 +10,13 @@ public abstract class ControlButtons {
                 this.buttonsStatus = new boolean[buttonsCount];
         }
         // this method to clear all buttons
-        public void ClearAllButtons(){
+        public void clearAllButtons(){
                 for (int i=0; i<buttonsCount; i++){
                         buttonsStatus[i] = false;
                 }
         }
         // this method to clear a button
-        public void ClearButton(int i){
+        public void clearButton(int i){
                 buttonsStatus[i] = false;
         }
 

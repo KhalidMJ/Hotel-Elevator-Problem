@@ -28,4 +28,11 @@ public class Hotel {
     public Elevator[] getElevators() {
         return this.elevators;
     }
+
+    public void updateFloorPassengers(){
+        // Check every 1 second for passengers arrival time
+        // If Elepsedtime > passenger.getArrivaltime, Floor[currentFLoor].addPassegner(passenger)
+    }
 }
+
+

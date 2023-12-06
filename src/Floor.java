@@ -4,21 +4,25 @@ public class Floor {
     private final ArrayList<Passenger> waitingPassengers;
     private final int FLOOR_NUMBER;
     private final String FLOOR_TYPE;
-    private final CallButton callButton;
+    private final CallButtons callButton;
 
     // Constructor
     public Floor(int floorNumber, String floorType) {
         this.FLOOR_NUMBER = floorNumber;
         this.FLOOR_TYPE = floorType;
         this.waitingPassengers = new ArrayList<>();
-        this.callButton = new CallButton();
+        this.callButton = new CallButtons(2);
     }
 
     // Method to add a passenger to the waiting list
     public void addPassenger(Passenger person) {
         waitingPassengers.add(person);
         // Notify the elevator system that the call button has been pressed
-        callButton.pressButton();
+        if (person.getDestinationFloor() < FLOOR_NUMBER){
+            callButton.requestDown();
+        } else {
+            callButton.requestUp();
+        }
         //ElevatorSystem.notifyFloorCall(this); FIXME
     }
 
@@ -42,9 +46,9 @@ public class Floor {
 
     // Method to handle elevator departure from the floor
     public void elevatorDeparture() {
-        closeDoors();
+        //closeDoors();
         // Reset the call button after the elevator departs
-        if (waitingPassengers.isEmpty()) callButton.resetButton(); // reset the button if there is no more waiting passengers
+        if (waitingPassengers.isEmpty()) callButton.clearAllButtons(); // reset the button if there is no more waiting passengers
     }
 
     // Method to clear the waiting passengers list after they have entered the elevator
@@ -52,15 +56,7 @@ public class Floor {
         waitingPassengers.clear();
     }
 
-    // Method to open elevator doors
-    private void openDoors() {
-        // Additional logic for opening doors can be added here
-    }
 
-    // Method to close elevator doors
-    private void closeDoors() {
-        // Additional logic for closing doors can be added here
-    }
 
     // Method to get the number of waiting passengers
     public int getWaitingPassengers() {
@@ -77,30 +73,4 @@ public class Floor {
         return FLOOR_TYPE;
     }
 
-    // Inner class for CallButton
-    public class CallButton {
-        private boolean isPressed;
-
-        // Constructor
-        public CallButton() {
-            this.isPressed = false;
-        }
-
-        // Getter method
-        public boolean isPressed() {
-            return isPressed;
-        }
-
-        // Method to press the call button
-        public void pressButton() {
-            isPressed = true;
-            // Additional logic for handling the call button press can be added here
-        }
-
-        // Method to reset the call button
-        public void resetButton() {
-            isPressed = false;
-            // Additional logic for handling the call button reset can be added here
-        }
     }
-}
