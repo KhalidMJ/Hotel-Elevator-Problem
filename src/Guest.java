@@ -24,6 +24,7 @@ public class Guest extends Passenger {
     }
 
     public void requestUp() {
+
         this.destinationFloor = this.currentFloor + 1;
     }
 

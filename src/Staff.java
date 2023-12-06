@@ -18,10 +18,12 @@ public class Staff extends Passenger {
     }
 
     public void requestUp() {
+
         this.destinationFloor = this.currentFloor + 1;
     }
 
     public void requestDown() {
+
         this.destinationFloor = this.currentFloor - 1;
     }
 }
