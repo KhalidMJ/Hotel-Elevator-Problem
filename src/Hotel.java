@@ -1,26 +1,27 @@
 public class Hotel {
-    private int floorCount;
     private Floor[] floors;
-    private int elevatorCount;
     private Elevator[] elevators;
+    private Passenger[] passengers;
 
-    public Hotel(Floor[] floors, Elevator[] elevators) {
-        this.floors = floors;
-        this.elevators = elevators;
-        this.floorCount = this.floors.length;
-        this.elevatorCount = this.elevators.length;
+    public Hotel(int floorCount, int elevatorsCount) {
+
+        floors = new Floor[floorCount];
+        for (int i = 0; i < floorCount; i++){
+            floors[i] = new Floor(i, "Normal");
+        }
+
+        elevators = new Elevator[elevatorsCount];
+        for (int i = 0; i < elevatorsCount; i++){
+            elevators[i] = new Elevator();
+            elevators[i].setCurrentHotel(this);
+        }
     }
 
-    public int getFloorCount() {
-        return floorCount;
+    public void setPassengers(Passenger[] passengers){
+        this.passengers = passengers;
     }
-
     public Floor[] getFloors() {
-        return floors;
-    }
-
-    public int getElevatorCount() {
-        return elevatorCount;
+        return this.floors;
     }
 
 

@@ -19,6 +19,21 @@ public abstract class Passenger {
         this.age = 25;
     }
 
+    public abstract void hasArrived();
+
+    public int getDestinationFloor(){
+        return 99;
+    }
+
+    public void exitElevator() {
+
+    }
+
+    public void enterElevator(){
+
+    }
+
+
     public String getName() {
         return this.name;
     }

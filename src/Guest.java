@@ -1,10 +1,10 @@
 import java.sql.Time;
 
-public class Guest extends Passenger {
+public class Guest extends Passenger implements RequestElevator{
     private int currentFloor;
     private int destinationFloor;
     private long requestTime;
-    private Time arriveTime;
+    private long arriveTime;
 
     public Guest(String name, String id, double weight, int age, int currentFloor, int destinationFloor, long requestTime) {
         super(name, id, weight, age);
@@ -39,4 +39,9 @@ public class Guest extends Passenger {
     public int destinationFloor() {
         return this.destinationFloor;
     }
+
+    public void hasArrived(){
+
+    }
 }
+

@@ -1,10 +1,10 @@
 import java.sql.Time;
 
-public class Staff extends Passenger {
+public class Staff extends Passenger implements RequestElevator{
     private int currentFloor;
     private int destinationFloor;
     private long requestTime;
-    private Time arriveTime;
+    private long arriveTime;
     private String Job;
 
     public Staff(String name, String id, double weight, int age, int currentFloor, int destinationFloor, long requestTime) {
@@ -25,6 +25,10 @@ public class Staff extends Passenger {
     public void requestDown() {
 
         this.destinationFloor = this.currentFloor - 1;
+    }
+
+    public void hasArrived(){
+
     }
 }
 
