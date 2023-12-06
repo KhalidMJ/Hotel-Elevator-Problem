@@ -4,6 +4,11 @@ public abstract class Passenger {
     private final String id;
     private final double weight;
     private final int age;
+    int currentFloor;
+    int destinationFloor;
+    long requestTime;
+    long arriveTime;
+
 
     protected Passenger(String name, String id, double weight, int age) {
         this.name = name;
@@ -49,4 +54,22 @@ public abstract class Passenger {
     public int getAge() {
         return this.age;
     }
+    public void requestUp() {
+
+        this.destinationFloor = this.currentFloor + 1;
+    }
+
+    public void requestDown() {
+        this.destinationFloor = this.currentFloor - 1;
+    }
+
+    public int currentFloor() {
+        return this.currentFloor;
+    }
+
+    public int destinationFloor() {
+        return this.destinationFloor;
+    }
+
+
 }
