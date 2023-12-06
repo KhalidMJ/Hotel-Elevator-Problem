@@ -28,8 +28,10 @@ public class Main extends Application {
 
         // generating and importing passengers
         String path = "src/Passengers.csv";
+
+
         try {
-            Simulation.generateRandomPassengersToFile(150, 2, 900, path);
+            Simulation.generateRandomPassengersToFile(80, 5, 700, path);
             String[][] passengersData = Simulation.getPassengersFromFile(path);
             Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
             System.out.println(Arrays.toString(passengers));
@@ -192,7 +194,8 @@ public class Main extends Application {
             titlePane.setBackground(Background.fill(Color.LIGHTSKYBLUE));
 
 
-            add(titlePane,           0, 0, 2, 1);
+            add(titlePane,           0, 0);
+            GridPane.setColumnSpan(titlePane, 2);
             add(currentFloorText,     0, 1, 1, 1);
             add(elevatorStatusText,   0, 2, 1, 1);
             add(doorsStatusText,      0, 3, 1, 1);
@@ -200,12 +203,13 @@ public class Main extends Application {
             add(elevatorStatus,       1, 2, 1, 1);
             add(elevatorDoorsStatus,  1, 3, 1, 1);
 
-            setVgap(20);
-            setHgap(200);
+            setVgap(10);
+            //setHgap(200);
             setBorder(Border.stroke(Color.LIGHTSKYBLUE));
             setMaxSize(450, 200);
             setMinSize(450, 200);
             setPrefSize(450, 200);
+            setGridLinesVisible(true);
 
         }
 
