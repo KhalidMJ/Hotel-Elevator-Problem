@@ -2,15 +2,12 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.*;
-import javafx.geometry.Pos;
+import javafx.geometry.HPos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.util.Arrays;
@@ -49,8 +46,8 @@ public class Main extends Application {
         ElevatorPane elevator2Pane = new ElevatorPane(elevator2);
 
         // Creating elevator information box
-        ElevatorInformationBox elevator1Information = new ElevatorInformationBox(elevator1, "Elevator 1");
-        ElevatorInformationBox elevator2Information = new ElevatorInformationBox(elevator2, "Elevator 2");
+        ElevatorInformationBox elevator1Information = new ElevatorInformationBox(elevator1);
+        ElevatorInformationBox elevator2Information = new ElevatorInformationBox(elevator2);
         // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
         new Thread(() -> Main.elevatorRun(elevator1)).start();
         new Thread(() -> Main.elevatorRun(elevator2)).start();
@@ -59,15 +56,14 @@ public class Main extends Application {
         Timeline timeline = new Timeline();
         timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY());
         timeline.getKeyFrames().addAll(elevator2Pane.kfUpdateElevatorPicture(), elevator2Pane.kfUpdateElevatorY());
-        timeline.getKeyFrames().addAll(elevator1Information.kfUpdateInformaiton(), elevator2Information.kfUpdateInformaiton());
+        timeline.getKeyFrames().addAll(elevator1Information.kfUpdateInformation(), elevator2Information.kfUpdateInformation());
         timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.setRate(1);
         timeline.play();
 
         HBox hbox = new HBox(elevator1Pane, elevator2Pane, elevator1Information, elevator2Information);
         hbox.setSpacing(0);
 
-        Scene scene = new Scene(hbox, 100 * 2, 880);
+        Scene scene = new Scene(hbox, 800, 880);
         mainStage.setResizable(true);
         mainStage.setScene(scene);
         mainStage.show();
@@ -134,90 +130,101 @@ public class Main extends Application {
             });
             return keyframe;
             }
-
-}
+    }
 
 
     class ElevatorInformationBox extends GridPane {
-        private final SimpleStringProperty currentFloorProperty;
-        private final SimpleStringProperty elevatorStatusProperty;
-        private final SimpleStringProperty doorsStatusProperty;
+        private static final Image imgOpenSign = new Image("images/OpenSign.png");
+        private static final Image imgNotOpenSign = new Image("images/notOpen.png");
+        private static final Image imgUpSign = new Image("images/up.png");
+        private static final Image imgIdleSign = new Image("images/IDLE.png");
+        private static final Image imgDownSign = new Image("images/down.png");
+        private static final Image imgLvl0 = new Image("images/0.png");
+        private static final Image imgLvl1 = new Image("images/1.png");
+        private static final Image imgLvl2 = new Image("images/2.png");
+        private static final Image imgLvl3 = new Image("images/3.png");
+        private static final Image imgLvl4 = new Image("images/4.png");
+        private static final Image imgLvl5 = new Image("images/5.png");
+        private static final Image imgLvl6 = new Image("images/6.png");
+        private static final Image imgLvl7 = new Image("images/7.png");
 
-        private final Label title;
-        private final Label currentFloorText = new Label("Current Floor:");
-        private final Label elevatorStatusText = new Label("Elevator Status:");
-        private final Label doorsStatusText = new Label("Doors Status:");
+        private final ObjectProperty<Image> DoorsStatusPictureProperty = new SimpleObjectProperty<>(imgNotOpenSign);
+        private final ObjectProperty<Image> elevatorStatusPictureProperty = new SimpleObjectProperty<>(imgIdleSign);
+        private final ObjectProperty<Image> elevatorLevelPictureProperty = new SimpleObjectProperty<>(imgLvl0);
 
+        private final ImageView imageViewDoorsStatus = new ImageView();
+        private final ImageView imageViewElevatorStatus = new ImageView();
+        private final ImageView imageViewElevatorLevel = new ImageView();
         Elevator elevator;
 
-        public ElevatorInformationBox(Elevator elev, String title){
+        public ElevatorInformationBox(Elevator elev){
             this.elevator = elev;
-            this.title = new Label(title);
 
-            currentFloorProperty = new SimpleStringProperty(""+elev.getCurrentFloor());
-            elevatorStatusProperty = new SimpleStringProperty(""+elev.getElevatorStatus());
-            doorsStatusProperty = new SimpleStringProperty(""+elev.getDoorsStatus());
+            // Binding the Image View properties to the images
+            imageViewDoorsStatus.imageProperty().bindBidirectional(DoorsStatusPictureProperty);
+            imageViewElevatorStatus.imageProperty().bindBidirectional(elevatorStatusPictureProperty);
+            imageViewElevatorLevel.imageProperty().bindBidirectional(elevatorLevelPictureProperty);
 
-            // Creating information labels and binding them to the properties
-            Label elevatorCurrentFloor = new Label();
-            Label elevatorStatus = new Label();
-            Label elevatorDoorsStatus = new Label();
-            elevatorCurrentFloor.textProperty().bind(currentFloorProperty);
-            elevatorStatus.textProperty().bind(elevatorStatusProperty);
-            elevatorDoorsStatus.textProperty().bind(doorsStatusProperty);
-
-            // Label Styling
-            this.title.setFont(Font.font(25));
-            this.title.setAlignment(Pos.CENTER);
-            this.title.setTextAlignment(TextAlignment.CENTER);
-
-            currentFloorText.setFont(Font.font(20));
-            elevatorStatusText.setFont(Font.font(20));
-            doorsStatusText.setFont(Font.font(20));
-            elevatorCurrentFloor.setFont(Font.font(20));
-            elevatorStatus.setFont(Font.font(20));
-            elevatorDoorsStatus.setFont(Font.font(20));
-
-            currentFloorText.setPrefSize(200, 30);
-            elevatorStatusText.setPrefSize(200, 30);
-            doorsStatusText.setPrefSize(200, 30);
-            elevatorCurrentFloor.setPrefSize(200, 30);
-            elevatorStatus.setPrefSize(200, 30);
-            elevatorDoorsStatus.setPrefSize(200, 30);
-
-            elevatorCurrentFloor.setAlignment(Pos.CENTER_RIGHT);
-            elevatorStatus.setAlignment(Pos.CENTER_RIGHT);
-            elevatorDoorsStatus.setAlignment(Pos.CENTER_RIGHT);
-
-            // Pane layout and style
-            StackPane titlePane = new StackPane(this.title);
-            titlePane.setBackground(Background.fill(Color.LIGHTSKYBLUE));
+            // Setting the size of the image views
+            imageViewDoorsStatus.setFitHeight(30);
+            imageViewDoorsStatus.setFitWidth(100);
+            imageViewElevatorStatus.setFitHeight(40);
+            imageViewElevatorStatus.setFitWidth(28);
+            imageViewElevatorLevel.setFitHeight(40);
+            imageViewElevatorLevel.setFitWidth(28);
 
 
-            add(titlePane,           0, 0);
-            GridPane.setColumnSpan(titlePane, 2);
-            add(currentFloorText,     0, 1, 1, 1);
-            add(elevatorStatusText,   0, 2, 1, 1);
-            add(doorsStatusText,      0, 3, 1, 1);
-            add(elevatorCurrentFloor, 1, 1, 1, 1);
-            add(elevatorStatus,       1, 2, 1, 1);
-            add(elevatorDoorsStatus,  1, 3, 1, 1);
+            add(imageViewDoorsStatus, 0, 0,2, 1);
+            add(imageViewElevatorStatus, 0, 1, 1, 1);
+            add(imageViewElevatorLevel, 1, 1, 1, 1);
+
+            setHalignment(imageViewElevatorStatus, HPos.RIGHT);
+            setHalignment(imageViewElevatorLevel, HPos.LEFT);
+
+            // Modifying the settings of the grid and adding the signs
+            ColumnConstraints column1 = new ColumnConstraints();
+            column1.setPrefWidth(45);
+            ColumnConstraints column2 = new ColumnConstraints();
+            column2.setPrefWidth(45);
+            getColumnConstraints().addAll(column1, column2);
 
             setVgap(10);
-            //setHgap(200);
-            setBorder(Border.stroke(Color.LIGHTSKYBLUE));
-            setMaxSize(450, 200);
-            setMinSize(450, 200);
-            setPrefSize(450, 200);
-            setGridLinesVisible(true);
+            setHgap(10);
+
+            setMaxSize(100, 80);
+            setMinSize(100, 80);
+            setPrefSize(100, 80);
+            setBackground(Background.fill(Color.BLACK));
+
 
         }
 
-        public KeyFrame kfUpdateInformaiton(){
+        public KeyFrame kfUpdateInformation(){
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
-                currentFloorProperty.set(""+this.elevator.getCurrentFloor());
-                elevatorStatusProperty.set(""+this.elevator.getElevatorStatus());
-                doorsStatusProperty.set(""+this.elevator.getDoorsStatus());
+                if (elevator.getDoorsStatus() == DoorsStatus.OPEN){
+                    DoorsStatusPictureProperty.set(imgOpenSign);
+                } else {
+                    DoorsStatusPictureProperty.set(imgNotOpenSign);
+                }
+
+                if (elevator.getElevatorStatus() == ElevatorStatus.IDLE){
+                    elevatorStatusPictureProperty.set(imgIdleSign);
+                } else if (elevator.getElevatorStatus() == ElevatorStatus.MOVING_UP){
+                    elevatorStatusPictureProperty.set(imgUpSign);
+                } else {
+                    elevatorStatusPictureProperty.set(imgDownSign);
+                }
+
+                switch (elevator.getCurrentFloor()) {
+                    case 0 -> elevatorLevelPictureProperty.set(imgLvl0);
+                    case 1 -> elevatorLevelPictureProperty.set(imgLvl1);
+                    case 2 -> elevatorLevelPictureProperty.set(imgLvl2);
+                    case 3 -> elevatorLevelPictureProperty.set(imgLvl3);
+                    case 4 -> elevatorLevelPictureProperty.set(imgLvl4);
+                    case 5 -> elevatorLevelPictureProperty.set(imgLvl5);
+                    case 6 -> elevatorLevelPictureProperty.set(imgLvl6);
+                    case 7 -> elevatorLevelPictureProperty.set(imgLvl7);
+                }
             });
             return keyframe;
         }
