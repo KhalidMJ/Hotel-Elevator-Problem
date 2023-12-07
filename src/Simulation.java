@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class Simulation {
 
     private static long startTime;
-
+    private static boolean isSimEnded = false;
 
 
 // Method to extract passengers data form a csv file and store them into a 2D array
@@ -124,6 +124,21 @@ public class Simulation {
         return 0;
     }
 
+    public static Passenger[] sortPassengersByArrivalTime(Passenger[] passengers){
+        Passenger[] sortedPassengers = passengers.clone();
+        Passenger temp;
+        for (int i = 0; i < sortedPassengers.length; i++){
+            for (int j = 0; j < sortedPassengers.length - 1; j++){
+                if (sortedPassengers[j].getArrivalTime() > sortedPassengers[j + 1].getArrivalTime()){
+                    temp = sortedPassengers[j];
+                    sortedPassengers[j] = sortedPassengers[j + 1];
+                    sortedPassengers[j + 1] = temp;
+                }
+            }
+        }
+        return sortedPassengers;
+    }
+
     // Method to return a random integer from a range.
     public static int returnRandomIndexFromRange(int min, int max){
         return java.util.concurrent.ThreadLocalRandom.current().nextInt(min, max + 1);
@@ -153,12 +168,24 @@ public class Simulation {
         }
     }
 
+    // This method will indicate that the simulation has ended
+    public static void endSim(){
+        isSimEnded = true;
+    }
+
+    // This method will set the start time of the simulation
     public static void setStartTime(){
         startTime = System.currentTimeMillis();
     }
 
+    // This method will return the elapsed time since the start of the simulation
     public static long getElapsedTime(){
         return (System.currentTimeMillis() / 1000) - (startTime / 1000);
+    }
+
+    // This method will return true if the simulation has ended
+    public static boolean isSimEnded() {
+        return isSimEnded;
     }
 }
 
