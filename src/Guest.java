@@ -2,11 +2,9 @@ import java.sql.Time;
 
 public class Guest extends Passenger implements RequestElevator{
 
-    public Guest(String name, String id, double weight, int age, int currentFloor, int destinationFloor, long requestTime) {
-        super(name, id, weight, age);
-        this.currentFloor = currentFloor;
-        this.destinationFloor = destinationFloor;
-        this.requestTime = requestTime;
+    public Guest(String name, String id, double weight, int age, int currentFloor, int destinationFloor, long arrivalTime ) {
+        super(name, id, weight, age,currentFloor,destinationFloor,arrivalTime);
+
     }
 
     public Guest(int currentFloor, int destinationFloor){

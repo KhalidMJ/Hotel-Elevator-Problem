@@ -1,23 +1,28 @@
 public abstract class Passenger {
-
     private final String name;
     private final String id;
     private final double weight;
     private final int age;
     int currentFloor;
     int destinationFloor;
-    long requestTime;
-    long arriveTime;
+    long arrivalTime;
+    long departureTime;
+    long waitingTime;
 
 
-    protected Passenger(String name, String id, double weight, int age) {
+    protected Passenger(String name, String id, double weight, int age, int currentFloor, int destinationFloor, long arrivalTime) {
         this.name = name;
         this.id = id;
         this.weight = weight;
         this.age = age;
+        this.currentFloor = currentFloor;
+        this.destinationFloor = destinationFloor;
+        this.arrivalTime = arrivalTime;
+
     }
 
-    protected Passenger(){
+
+    protected Passenger() {
         this.name = "Anonymous  guest";
         this.id = "11111";
         this.weight = 70;
@@ -26,18 +31,28 @@ public abstract class Passenger {
 
     public abstract void hasArrived();
 
-    public int getDestinationFloor(){
+    public int getDestinationFloor() {
         return 99;
     }
 
+    public long waitingTime() {
+        return this.waitingTime;
+
+    }
+
     public void exitElevator() {
+        Simulation.delay(2);
+        departureTime = Simulation.getElapsedTime();
+        waitingTime = departureTime - this.arrivalTime;
+
 
     }
 
-    public void enterElevator(){
+    public void enterElevator() {
+        Simulation.delay(2);
+
 
     }
-
 
     public String getName() {
         return this.name;
@@ -54,6 +69,7 @@ public abstract class Passenger {
     public int getAge() {
         return this.age;
     }
+
     public void requestUp() {
 
         this.destinationFloor = this.currentFloor + 1;
@@ -72,4 +88,13 @@ public abstract class Passenger {
     }
 
 
-}
+    public long getArrivalTime() {
+        return this.arrivalTime;
+    }
+
+    public long getDepartureTime() {
+        return this.departureTime;
+    }
+
+
+ }
