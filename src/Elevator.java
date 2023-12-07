@@ -27,7 +27,7 @@ public class Elevator {
         if (level == this.currentFloor) {
             pause();
             openDoors();
-            //currentHotel.getFloors()[currentFloor].elevatorArrival(this); // Notify the floor that the elevator arrived and is ready
+            currentHotel.getFloors()[currentFloor].elevatorArrival(this);
             return;
         }
         if (cabButtons.buttonsStatus[this.currentFloor]){ // Stop if the cab button of the current floor is clicked
@@ -53,8 +53,9 @@ public class Elevator {
             Simulation.delay(this.SPEED);
             this.currentFloor--;
         }
-        moveTo(level);
+        moveTo(level); // Recursive call
     }
+
 
     // Method to pause the elevator and update its status
     public void pause(){
