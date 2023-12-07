@@ -14,7 +14,7 @@ public abstract class Passenger {
         this.id = id;
         this.weight = weight;
         this.age = age;
-        this.currentFloor=currentFloor;
+        this.currentFloor=currentFloor ;
         this.destinationFloor=destinationFloor;
         this.arrivalTime=arrivalTime;
     }
