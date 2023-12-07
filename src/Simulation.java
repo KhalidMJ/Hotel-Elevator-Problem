@@ -3,9 +3,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Simulation {
-    public static void main(String[] args){
 
-        }
+    private static long startTime;
+
+
 
 // Method to extract passengers data form a csv file and store them into a 2D array
     public static String[][] getPassengersFromFile(String path) {
@@ -150,6 +151,14 @@ public class Simulation {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void setStartTime(){
+        startTime = System.currentTimeMillis();
+    }
+
+    public static long getElapsedTime(){
+        return (System.currentTimeMillis() / 1000) - (startTime / 1000);
     }
 }
 
