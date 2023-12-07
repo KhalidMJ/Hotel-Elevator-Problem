@@ -6,15 +6,17 @@ public abstract class Passenger {
     private final int age;
     int currentFloor;
     int destinationFloor;
-    long requestTime;
-    long arriveTime;
+    long arrivalTime;
 
 
-    protected Passenger(String name, String id, double weight, int age) {
+    protected Passenger(String name, String id, double weight, int age,int currentFloor, int destinationFloor, long arrivalTime ) {
         this.name = name;
         this.id = id;
         this.weight = weight;
         this.age = age;
+        this.currentFloor=currentFloor;
+        this.destinationFloor=destinationFloor;
+        this.arrivalTime=arrivalTime;
     }
 
     protected Passenger(){
@@ -71,5 +73,9 @@ public abstract class Passenger {
         return this.destinationFloor;
     }
 
+
+    public long arrivalTime() {
+        return this.arrivalTime();
+    }
 
 }
