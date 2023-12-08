@@ -31,10 +31,7 @@ public abstract class Passenger {
 
     public abstract void hasArrived();
 
-    public int getDestinationFloor() {
-        return 99;
-    }
-
++
     public long waitingTime() {
         return this.waitingTime;
 
@@ -44,14 +41,10 @@ public abstract class Passenger {
         Simulation.delay(2);
         departureTime = Simulation.getElapsedTime();
         waitingTime = departureTime - this.arrivalTime;
-
-
     }
 
     public void enterElevator() {
         Simulation.delay(2);
-
-
     }
 
     public String getName() {
@@ -79,11 +72,11 @@ public abstract class Passenger {
         this.destinationFloor = this.currentFloor - 1;
     }
 
-    public int currentFloor() {
+    public int getCurrentFloor() {
         return this.currentFloor;
     }
 
-    public int destinationFloor() {
+    public int getDestinationFloor() {
         return this.destinationFloor;
     }
 
@@ -96,5 +89,23 @@ public abstract class Passenger {
         return this.departureTime;
     }
 
+    public long getWaitingTime() {
+        return this.waitingTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Passenger{" +
+                "name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                ", weight=" + weight +
+                ", age=" + age +
+                ", currentFloor=" + currentFloor +
+                ", destinationFloor=" + destinationFloor +
+                ", arrivalTime=" + arrivalTime +
+                ", departureTime=" + departureTime +
+                ", waitingTime=" + waitingTime +
+                '}' + "\n";
+    }
 
  }

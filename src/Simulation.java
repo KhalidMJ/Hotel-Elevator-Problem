@@ -57,8 +57,8 @@ public class Simulation {
             weight = Double.parseDouble(data[3]);
             age = Integer.parseInt(data[4]);
             arrivalTime = Long.parseLong(data[5]);
-            currentFloor = Integer.parseInt(data[5]);
-            destinationFloor = Integer.parseInt(data[6]);
+            currentFloor = Integer.parseInt(data[6]);
+            destinationFloor = Integer.parseInt(data[7]);
 
             if (data[0].equalsIgnoreCase("Guest")) {
                 Guest passenger = new Guest(name, id, weight, age, currentFloor, destinationFloor, arrivalTime);

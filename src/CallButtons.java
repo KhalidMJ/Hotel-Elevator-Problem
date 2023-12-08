@@ -21,4 +21,8 @@ public class CallButtons extends ControlButtons implements RequestElevator
     public void requestDown() {
         buttonsStatus[0] = true;
     }
+
+    public boolean isPressed(){
+        return buttonsStatus[0] || buttonsStatus[1];
+    }
 }
