@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Floor {
     private final ArrayList<Passenger> waitingPassengers;
@@ -15,7 +16,7 @@ public class Floor {
     }
 
     // Method to add a passenger to the waiting list
-    public void addPassenger(Passenger person) {
+    public synchronized void addPassenger(Passenger person) {
         waitingPassengers.add(person);
         // Notify the elevator system that the call button has been pressed
         if (person.getDestinationFloor() < FLOOR_NUMBER){
@@ -23,40 +24,41 @@ public class Floor {
         } else {
             callButton.requestUp();
         }
-        //ElevatorSystem.notifyFloorCall(this); FIXME
     }
 
     // Method to handle elevator arrival at the floor
-    public void elevatorArrival(Elevator elevator) {
+    public synchronized void elevatorArrival(Elevator elevator) {
         // Let arrived passengers leave the elevator
-        for (Passenger passenger: elevator.getCurrentPassengers()){
-            if (passenger.getDestinationFloor() == elevator.getCurrentFloor()){
-                elevator.unloadPassenger(passenger);
-                passenger.exitElevator(); // TODO
+            elevator.unloadPassengers();
+
+        // Let waiting passengers enter the elevator
+        Iterator<Passenger> it2 = waitingPassengers.iterator();
+        while (it2.hasNext()){
+            Passenger passenger = it2.next();
+            // Checking if loading the passengers is successful, meaning that there is enough capacity
+            if (elevator.loadPassenger(passenger)) {
+                passenger.enterElevator();
+                it2.remove(); // If the passenger is loaded to the elevator, delete him from the list
             }
         }
-        // Let waiting passengers enter the elevator
-        for (Passenger passenger : waitingPassengers) {
-            // Checking if loading the passengers is successful, meaning that there is enough capacity
-            if (elevator.loadPassenger(passenger)) waitingPassengers.remove(passenger); // If the passenger is loaded to the elevator, delete him from the list
-            passenger.enterElevator(); //TODO
-        }
-        elevatorDeparture();
+        elevatorDeparture(elevator);
     }
 
     // Method to handle elevator departure from the floor
-    public void elevatorDeparture() {
-        //closeDoors();
+    public void elevatorDeparture(Elevator elevator) {
+        elevator.closeDoors();
         // Reset the call button after the elevator departs
         if (waitingPassengers.isEmpty()) callButton.clearAllButtons(); // reset the button if there is no more waiting passengers
     }
 
     // Method to clear the waiting passengers list after they have entered the elevator
-    private void clearWaitingPassengers() {
+    private synchronized void clearWaitingPassengers() {
         waitingPassengers.clear();
     }
 
-
+    public CallButtons getCallButton() {
+        return callButton;
+    }
 
     // Method to get the number of waiting passengers
     public int getWaitingPassengers() {

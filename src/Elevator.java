@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Elevator {
     private final int CAPACITY = 10;
@@ -19,10 +20,10 @@ public class Elevator {
         this.currentPassengers = new ArrayList<>();
         this.cabButtons = new CabButtons(8);
         this.elevatorStatus = ElevatorStatus.IDLE;
-        this.doorsStatus = DoorsStatus.OPEN;
+        this.doorsStatus = DoorsStatus.CLOSED;
     }
     // Recursive Method to move the elevator to a requested floor
-    public void moveTo(int level){
+    public synchronized void moveTo(int level){
         // Base case: Elevator is already at the wanted level OR There is a passenger who want to get off on the current floor
         if (level == this.currentFloor) {
             pause();
@@ -30,15 +31,13 @@ public class Elevator {
             currentHotel.getFloors()[currentFloor].elevatorArrival(this);
             return;
         }
-        if (cabButtons.buttonsStatus[this.currentFloor]){ // Stop if the cab button of the current floor is clicked
+        if (cabButtons.buttonsStatus[this.currentFloor] || currentHotel.getFloors()[this.currentFloor].getCallButton().isPressed()){ // Stop if the cab button or the call button of the current floor is clicked
             pause();
             openDoors();
             currentHotel.getFloors()[currentFloor].elevatorArrival(this);
+            return;
         }
 
-        if (this.doorsStatus != DoorsStatus.CLOSED){ // Making sure that the elevator won't move with its doors open
-            closeDoors();
-        }
         // Assertions TODO: change it into an exception
         assert (level >= 0 && level <= 7) : "The elevator is bound to move between 0 and 7 floors only";
         assert this.doorsStatus == DoorsStatus.CLOSED : "The doors are not closed";
@@ -87,11 +86,35 @@ public class Elevator {
         return false;
     }
 
-    public void unloadPassenger(Passenger passenger){
-        currentPassengers.remove(passenger);
-        passenger.hasArrived();
-        totalCurrentPassengersWeight -= passenger.getWeight();
+    // Method to unload passengers who have reached their destination floor
+    public synchronized void unloadPassengers(){
+        Iterator<Passenger> it = currentPassengers.iterator();
+        while (it.hasNext()){
+            Passenger passenger = it.next();
+            if (passenger.getDestinationFloor() == currentFloor){
+                passenger.exitElevator();
+                totalCurrentPassengersWeight -= passenger.getWeight();
+                it.remove();
+            }
+        }
     }
+
+    public void start(String algorithm){
+        if (algorithm.equals("SCAN")){
+            SCAN();
+        }
+    }
+
+    // Method to move the elevator up and down between the top and bottom floors, and check for passengers on each floor.
+    public void SCAN(){
+        do {
+            // Move to the top floor
+            moveTo(7);
+            // Move to the bottom floor
+            moveTo(0);
+        } while (!Simulation.isSimEnded());
+    }
+
 
     // Setters/Getters -------------------------------------
 
@@ -149,3 +172,4 @@ public class Elevator {
 enum ElevatorStatus {MOVING_UP, MOVING_DOWN, IDLE}
 
 enum DoorsStatus {OPEN, CLOSED, OPENING, CLOSING}
+

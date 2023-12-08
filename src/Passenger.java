@@ -31,7 +31,7 @@ public abstract class Passenger {
 
     public abstract void hasArrived();
 
-+
+
     public long waitingTime() {
         return this.waitingTime;
 

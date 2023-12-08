@@ -17,9 +17,22 @@ public class Hotel {
         }
     }
 
+    public synchronized void updateFloorPassengers(){
+        int i = 0;
+        do {
+            if (passengers[i].getArrivalTime() <= Simulation.getElapsedTime()){
+                floors[passengers[i].getCurrentFloor()].addPassenger(passengers[i]);
+                i++;
+            }
+            Simulation.delay(1);
+        } while (i < passengers.length);
+
+    }
+
     public void setPassengers(Passenger[] passengers){
         this.passengers = passengers;
     }
+
     public Floor[] getFloors() {
         return this.floors;
     }
@@ -29,10 +42,7 @@ public class Hotel {
         return this.elevators;
     }
 
-    public void updateFloorPassengers(){
-        // Check every 1 second for passengers arrival time
-        // If Elepsedtime > passenger.getArrivaltime, Floor[currentFLoor].addPassegner(passenger)
-    }
+
 }
 
 

@@ -28,13 +28,16 @@ public class Main extends Application {
 
 
         try {
-            Simulation.generateRandomPassengersToFile(80, 5, 700, path);
+            //Simulation.generateRandomPassengersToFile(80, 5, 700, path);
             String[][] passengersData = Simulation.getPassengersFromFile(path);
             Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
+            passengers = Simulation.sortPassengersByArrivalTime(passengers);
+            hotel.setPassengers(passengers);
             System.out.println(Arrays.toString(passengers));
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
+        Simulation.setStartTime();
         launch(args);
     }
 
@@ -48,9 +51,15 @@ public class Main extends Application {
         // Creating elevator information box
         ElevatorInformationBox elevator1Information = new ElevatorInformationBox(elevator1);
         ElevatorInformationBox elevator2Information = new ElevatorInformationBox(elevator2);
+
+        // Combining each elevator pane with its information box into a single VBox
+        VBox elevator1Vbox = new VBox(elevator1Pane, elevator1Information);
+        VBox elevator2Vbox = new VBox(elevator2Pane, elevator2Information);
+
         // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
-        new Thread(() -> Main.elevatorRun(elevator1)).start();
-        new Thread(() -> Main.elevatorRun(elevator2)).start();
+        new Thread(() -> Main.elevatorRun(elevator1, "SCAN")).start();
+        new Thread(() -> Main.elevatorRun(elevator2, "SCAN")).start();
+        new Thread(Main::passengersUpdatingRun).start();
 
         // The main timeline for updates and animations
         Timeline timeline = new Timeline();
@@ -60,10 +69,10 @@ public class Main extends Application {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        HBox hbox = new HBox(elevator1Pane, elevator2Pane, elevator1Information, elevator2Information);
+        HBox hbox = new HBox(elevator1Vbox, elevator2Vbox);
         hbox.setSpacing(0);
 
-        Scene scene = new Scene(hbox, 800, 880);
+        Scene scene = new Scene(hbox, 800, 960);
         mainStage.setResizable(true);
         mainStage.setScene(scene);
         mainStage.show();
@@ -71,18 +80,22 @@ public class Main extends Application {
 
 
 
-    private static void elevatorRun(Elevator elevator) {
-        while (true) {
+    private static void elevatorRun(Elevator elevator, String algorithm) {
+        // start the elevator and run the simulation
+        while(true){
             elevator.moveTo(Simulation.returnRandomIndexFromRange(0, 7));
-            Simulation.delay(3);
-            //elevator.checkRequests();
-            //elevator.moveTo(elevator.getPath[0]);
-            //elevator.unloadPassengers();
-            //elevator.loadPassengers();
+            Simulation.delay(2);
         }
     }
 
+    private static void passengersUpdatingRun() {
+        // update the passengers on each floor
+        hotel.updateFloorPassengers();
     }
+
+}
+
+// GUI Classes ----------------------------------------------------
 
     class ElevatorPane extends Pane{
         private static final Image imgOpenDoors = new Image("images/elevatorOpen.png");
