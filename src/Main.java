@@ -2,8 +2,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -130,8 +128,8 @@ public class Main extends Application {
             currentFloorYProperty = new SimpleIntegerProperty(Math.abs((this.elevator.getCurrentFloor() * 110) - 770));
 
             imageView = new ImageView();
-            imageView.setFitHeight(90);
-            imageView.setFitWidth(60);
+            imageView.setFitHeight(110);
+            imageView.setFitWidth(100);
             imageView.yProperty().bindBidirectional(currentFloorYProperty);
             imageView.imageProperty().bindBidirectional(elevatorDoorsPictureProperty);
 
