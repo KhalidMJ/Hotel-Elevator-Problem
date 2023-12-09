@@ -20,7 +20,7 @@ public class Hotel {
     public synchronized void updateFloorPassengers(){
         int i = 0;
         do {
-            if (passengers[0].getArrivalTime() <= Simulation.getElapsedTime()){
+            if (passengers[i].getArrivalTime() <= Simulation.getElapsedTime()){
                 int passCurrentFloor = passengers[i].getCurrentFloor();
                 floors[passCurrentFloor].addPassenger(passengers[i]);
                 passengers[i].requestDown(floors[passCurrentFloor].getCallButton());
@@ -28,7 +28,6 @@ public class Hotel {
             }
             Simulation.delay(0.2);
         } while (i < passengers.length);
-
     }
 
     public void setPassengers(Passenger[] passengers){

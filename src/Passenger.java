@@ -10,7 +10,7 @@ public abstract class Passenger implements RequestElevator{
     long waitingTime;
 
 
-    protected Passenger(String name, String id, double weight, int age, int currentFloor, int destinationFloor, long arrivalTime) {
+    protected Passenger(String name, String id, double weight, int age, long arrivalTime, int currentFloor, int destinationFloor) {
         this.name = name;
         this.id = id;
         this.weight = weight;

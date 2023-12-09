@@ -37,7 +37,6 @@ public class Elevator {
             pause();
             openDoors();
             servicedFloor.elevatorArrival(this);
-            return;
         }
 
         // Assertions TODO: change it into an exception

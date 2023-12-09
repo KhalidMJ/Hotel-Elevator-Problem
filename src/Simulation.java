@@ -61,10 +61,10 @@ public class Simulation {
             destinationFloor = Integer.parseInt(data[7]);
 
             if (data[0].equalsIgnoreCase("Guest")) {
-                Guest passenger = new Guest(name, id, weight, age, currentFloor, destinationFloor, arrivalTime);
+                Guest passenger = new Guest(name, id, weight, age,arrivalTime, currentFloor, destinationFloor);
                 passengerObjects[i] = passenger;
             } else if (data[0].equalsIgnoreCase("Staff")) {
-                Staff passenger = new Staff(name, id, weight, age, currentFloor, destinationFloor, arrivalTime);
+                Staff passenger = new Staff(name, id, weight, age, arrivalTime, currentFloor, destinationFloor);
                 passengerObjects[i] = passenger;
             } else {throw new IOException("CSV FILE FORMAT IS NOT CORRECT");}
             i++;
@@ -180,7 +180,8 @@ public class Simulation {
 
     // This method will return the elapsed time since the start of the simulation
     public static long getElapsedTime(){
-        return (System.currentTimeMillis() / 1000) - (startTime / 1000);
+        long elapsedTime = (System.currentTimeMillis() / 1000) - (startTime / 1000);
+        return elapsedTime;
     }
 
     // This method will return true if the simulation has ended
