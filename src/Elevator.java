@@ -25,16 +25,18 @@ public class Elevator {
     // Recursive Method to move the elevator to a requested floor
     public synchronized void moveTo(int level){
         // Base case: Elevator is already at the wanted level OR There is a passenger who want to get off on the current floor
+        Floor servicedFloor = currentHotel.getFloors()[currentFloor];
+        System.out.println(Simulation.getElapsedTime());
         if (level == this.currentFloor) {
             pause();
             openDoors();
-            currentHotel.getFloors()[currentFloor].elevatorArrival(this);
+            servicedFloor.elevatorArrival(this);
             return;
         }
         if (cabButtons.buttonsStatus[this.currentFloor] || currentHotel.getFloors()[this.currentFloor].getCallButton().isPressed()){ // Stop if the cab button or the call button of the current floor is clicked
             pause();
             openDoors();
-            currentHotel.getFloors()[currentFloor].elevatorArrival(this);
+            servicedFloor.elevatorArrival(this);
             return;
         }
 
@@ -77,7 +79,7 @@ public class Elevator {
         this.doorsStatus = DoorsStatus.CLOSED;
     }
     //  Method to load a passenger to the elevator, it returns true if the loading is completed, false if elevator rejected the passenger
-    public boolean loadPassenger(Passenger passenger){
+    public boolean checkPassenger(Passenger passenger){
         if ((this.currentPassengers.size() < CAPACITY) && (passenger.getWeight() + this.totalCurrentPassengersWeight < MAX_WEIGHT)){
             currentPassengers.add(passenger);
             totalCurrentPassengersWeight += passenger.getWeight();
@@ -97,6 +99,16 @@ public class Elevator {
                 it.remove();
             }
         }
+    }
+    public synchronized void loadPassengers(ArrayList<Passenger> waitingPassengers) {
+        ArrayList<Passenger> loadedPassengers = new ArrayList<>();
+        for (Passenger passenger : waitingPassengers){
+            if (checkPassenger(passenger)){
+                passenger.enterElevator();
+                loadedPassengers.add(passenger);
+            }
+        }
+        waitingPassengers.removeAll(loadedPassengers);
     }
 
     public void start(String algorithm){
@@ -166,6 +178,8 @@ public class Elevator {
     public String toString() {
         return "This elevator is at " + this.currentFloor + " and it is " + elevatorStatus + ", the doors are " + this.doorsStatus + "\r";
     }
+
+
 }
 
 // enums for the elevator status and elevator's doors status

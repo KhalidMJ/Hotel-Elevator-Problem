@@ -2,12 +2,17 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.util.Arrays;
@@ -56,6 +61,19 @@ public class Main extends Application {
         VBox elevator1Vbox = new VBox(elevator1Pane, elevator1Information);
         VBox elevator2Vbox = new VBox(elevator2Pane, elevator2Information);
 
+        // Creating floors panes
+        FloorPane floor0Pane = new FloorPane(hotel.getFloors()[0], new Image("images/floor0.PNG"));
+        FloorPane floor1Pane = new FloorPane(hotel.getFloors()[1], new Image("images/floor1.PNG"));
+        FloorPane floor2Pane = new FloorPane(hotel.getFloors()[2], new Image("images/floor2.PNG"));
+        FloorPane floor3Pane = new FloorPane(hotel.getFloors()[3], new Image("images/floor3.PNG"));
+        FloorPane floor4Pane = new FloorPane(hotel.getFloors()[4], new Image("images/floor4.PNG"));
+        FloorPane floor5Pane = new FloorPane(hotel.getFloors()[5], new Image("images/floor5.PNG"));
+        FloorPane floor6Pane = new FloorPane(hotel.getFloors()[6], new Image("images/floor6.PNG"));
+        FloorPane floor7Pane = new FloorPane(hotel.getFloors()[7], new Image("images/floor7.PNG"));
+
+        // Adding the floors in one single VBox
+        VBox floorsVBox = new VBox(floor7Pane, floor6Pane, floor5Pane, floor4Pane, floor3Pane, floor2Pane, floor1Pane, floor0Pane);
+
         // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
         new Thread(() -> Main.elevatorRun(elevator1, "SCAN")).start();
         new Thread(() -> Main.elevatorRun(elevator2, "SCAN")).start();
@@ -66,10 +84,13 @@ public class Main extends Application {
         timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY());
         timeline.getKeyFrames().addAll(elevator2Pane.kfUpdateElevatorPicture(), elevator2Pane.kfUpdateElevatorY());
         timeline.getKeyFrames().addAll(elevator1Information.kfUpdateInformation(), elevator2Information.kfUpdateInformation());
+        timeline.getKeyFrames().addAll(floor0Pane.kfUpdateFloor(), floor1Pane.kfUpdateFloor(), floor2Pane.kfUpdateFloor(),
+                                        floor3Pane.kfUpdateFloor(), floor4Pane.kfUpdateFloor(), floor5Pane.kfUpdateFloor(),
+                                        floor6Pane.kfUpdateFloor(), floor7Pane.kfUpdateFloor());
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        HBox hbox = new HBox(elevator1Vbox, elevator2Vbox);
+        HBox hbox = new HBox(elevator1Vbox, elevator2Vbox, floorsVBox);
         hbox.setSpacing(0);
 
         Scene scene = new Scene(hbox, 800, 960);
@@ -82,10 +103,7 @@ public class Main extends Application {
 
     private static void elevatorRun(Elevator elevator, String algorithm) {
         // start the elevator and run the simulation
-        while(true){
-            elevator.moveTo(Simulation.returnRandomIndexFromRange(0, 7));
-            Simulation.delay(2);
-        }
+        elevator.start("SCAN");
     }
 
     private static void passengersUpdatingRun() {
@@ -112,16 +130,27 @@ public class Main extends Application {
             currentFloorYProperty = new SimpleIntegerProperty(Math.abs((this.elevator.getCurrentFloor() * 110) - 770));
 
             imageView = new ImageView();
-            imageView.setFitHeight(110);
-            imageView.setFitWidth(100);
+            imageView.setFitHeight(90);
+            imageView.setFitWidth(60);
             imageView.yProperty().bindBidirectional(currentFloorYProperty);
             imageView.imageProperty().bindBidirectional(elevatorDoorsPictureProperty);
 
+            Line line = new Line();
+            line.setStartX(50);
+            line.setEndX(50);
+            line.setStartY(0);
+            line.setEndY(880);
+            line.setStroke(Color.grayRgb(30));
+            line.setFill(Color.GREENYELLOW);
+            line.setStrokeWidth(5);
+
+            getChildren().add(line);
             getChildren().add(imageView);
+            setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
             setMaxSize(100, 880);
             setPrefSize(100, 880);
             setMinSize(100, 880);
-            setBackground(Background.fill(Color.LIGHTSKYBLUE));
+            setBackground(Background.fill(Color.GRAY));
 
         }
 
@@ -238,6 +267,43 @@ public class Main extends Application {
                     case 6 -> elevatorLevelPictureProperty.set(imgLvl6);
                     case 7 -> elevatorLevelPictureProperty.set(imgLvl7);
                 }
+            });
+            return keyframe;
+        }
+    }
+
+    class FloorPane extends Pane{
+        private final SimpleIntegerProperty waitingPassengersProperty;
+        private final ImageView imageView;
+        private final Floor floor;
+        private final Label waitingPassengersCount;
+
+        public FloorPane(Floor floor, Image image) {
+            this.floor = floor;
+
+            waitingPassengersProperty = new SimpleIntegerProperty(floor.getWaitingPassengersCount());
+            waitingPassengersCount = new Label();
+            waitingPassengersCount.textProperty().bind(waitingPassengersProperty.asString());
+            waitingPassengersCount.setLayoutX(30);
+            waitingPassengersCount.setLayoutY(30);
+            waitingPassengersCount.setFont(Font.font(30));
+
+
+            imageView = new ImageView(image);
+            imageView.setFitWidth(400);
+            imageView.setFitHeight(110);
+
+
+            getChildren().addAll(imageView, waitingPassengersCount);
+            setMaxSize(400, 110);
+            setPrefSize(400, 110);
+            setMinSize(400, 110);
+            setBackground(Background.fill(Color.GRAY));
+        }
+
+        public KeyFrame kfUpdateFloor() {
+            KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
+                waitingPassengersProperty.set(floor.getWaitingPassengersCount());
             });
             return keyframe;
         }

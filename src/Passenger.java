@@ -1,4 +1,4 @@
-public abstract class Passenger {
+public abstract class Passenger implements RequestElevator{
     private final String name;
     private final String id;
     private final double weight;
@@ -63,13 +63,12 @@ public abstract class Passenger {
         return this.age;
     }
 
-    public void requestUp() {
-
-        this.destinationFloor = this.currentFloor + 1;
+    public void requestUp(CallButtons callButtons) {
+        callButtons.requestUp();
     }
 
-    public void requestDown() {
-        this.destinationFloor = this.currentFloor - 1;
+    public void requestDown(CallButtons callButtons) {
+        callButtons.requestDown();
     }
 
     public int getCurrentFloor() {

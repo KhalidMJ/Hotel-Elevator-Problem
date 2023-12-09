@@ -22,5 +22,14 @@ public class Guest extends Passenger implements RequestElevator{
     }
 
 
+    @Override
+    public void requestUp() {
+
+    }
+
+    @Override
+    public void requestDown() {
+
+    }
 }
 

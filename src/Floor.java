@@ -20,9 +20,9 @@ public class Floor {
         waitingPassengers.add(person);
         // Notify the elevator system that the call button has been pressed
         if (person.getDestinationFloor() < FLOOR_NUMBER){
-            callButton.requestDown();
+            person.requestDown();
         } else {
-            callButton.requestUp();
+            person.requestUp();
         }
     }
 
@@ -32,15 +32,8 @@ public class Floor {
             elevator.unloadPassengers();
 
         // Let waiting passengers enter the elevator
-        Iterator<Passenger> it2 = waitingPassengers.iterator();
-        while (it2.hasNext()){
-            Passenger passenger = it2.next();
-            // Checking if loading the passengers is successful, meaning that there is enough capacity
-            if (elevator.loadPassenger(passenger)) {
-                passenger.enterElevator();
-                it2.remove(); // If the passenger is loaded to the elevator, delete him from the list
-            }
-        }
+            elevator.loadPassengers(this.waitingPassengers);
+
         elevatorDeparture(elevator);
     }
 
@@ -61,7 +54,7 @@ public class Floor {
     }
 
     // Method to get the number of waiting passengers
-    public int getWaitingPassengers() {
+    public int getWaitingPassengersCount() {
         return waitingPassengers.size();
     }
 

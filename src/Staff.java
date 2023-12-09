@@ -15,5 +15,15 @@ public class Staff extends Passenger implements RequestElevator{
     public void hasArrived(){
 
     }
+
+    @Override
+    public void requestUp() {
+
+    }
+
+    @Override
+    public void requestDown() {
+
+    }
 }
 
