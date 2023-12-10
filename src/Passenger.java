@@ -1,4 +1,4 @@
-public abstract class Passenger implements RequestElevator{
+public class Passenger{
     private final String name;
     private final String id;
     private final double weight;
@@ -29,9 +29,6 @@ public abstract class Passenger implements RequestElevator{
         this.age = 25;
     }
 
-    public abstract void hasArrived();
-
-
     public long waitingTime() {
         return this.waitingTime;
 
@@ -47,6 +44,15 @@ public abstract class Passenger implements RequestElevator{
         Simulation.delay(2);
     }
 
+    public void requestUp(CallButtons callButtons) {
+        callButtons.requestUp();
+    }
+
+    public void requestDown(CallButtons callButtons) {
+        callButtons.requestDown();
+    }
+
+    // Setters and Getters ---------------------------------------------
     public String getName() {
         return this.name;
     }
@@ -63,13 +69,6 @@ public abstract class Passenger implements RequestElevator{
         return this.age;
     }
 
-    public void requestUp(CallButtons callButtons) {
-        callButtons.requestUp();
-    }
-
-    public void requestDown(CallButtons callButtons) {
-        callButtons.requestDown();
-    }
 
     public int getCurrentFloor() {
         return this.currentFloor;

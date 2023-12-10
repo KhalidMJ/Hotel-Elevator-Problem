@@ -13,16 +13,15 @@ public class CallButtons extends ControlButtons implements RequestElevator
 
     @Override
     public void requestUp() {
-        buttonsStatus[1] = true;
-
+        pressButton(0);
     }
 
     @Override
     public void requestDown() {
-        buttonsStatus[0] = true;
+        pressButton(1);
     }
 
     public boolean isPressed(){
-        return buttonsStatus[0] || buttonsStatus[1];
+        return getButtonsStatus()[0] || getButtonsStatus()[1];
     }
 }

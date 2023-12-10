@@ -1,8 +1,8 @@
 
 // ControlButtons class has these attributes:
 public abstract class ControlButtons {
-        int buttonsCount;
-        boolean[] buttonsStatus;  // status of all the buttons
+        private int buttonsCount;
+        private boolean[] buttonsStatus;  // status of all the buttons
 
 
         public ControlButtons(int buttonsCount){
@@ -28,6 +28,10 @@ public abstract class ControlButtons {
         // this method will return the buttons' status
         public boolean[] getButtonsStatus() {
             return buttonsStatus;
+        }
+
+        public void pressButton(int i){
+                buttonsStatus[i] = true;
         }
 }
 

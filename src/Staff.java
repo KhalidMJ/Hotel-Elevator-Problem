@@ -1,6 +1,6 @@
 import java.sql.Time;
 
-public class Staff extends Passenger implements RequestElevator{
+public class Staff extends Passenger{
     private String Job;
 
     public Staff(String name, String id, double weight, int age, long arrivalTime, int currentFloor, int destinationFloor) {
@@ -11,19 +11,5 @@ public class Staff extends Passenger implements RequestElevator{
     public Staff() {
     }
 
-
-    public void hasArrived(){
-
-    }
-
-    @Override
-    public void requestUp() {
-
-    }
-
-    @Override
-    public void requestDown() {
-
-    }
 }
 

@@ -5,11 +5,4 @@ public class CabButtons extends ControlButtons{
         super(buttonsCount);
     }
 
-
-    public void pressButton(int level){
-        buttonsStatus[level]= true;
-    }
-
-
-
 }
