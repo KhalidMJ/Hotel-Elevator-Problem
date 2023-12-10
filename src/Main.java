@@ -3,6 +3,7 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.*;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -31,7 +32,7 @@ public class Main extends Application {
 
 
         try {
-            Simulation.generateRandomPassengersToFile(80, 5, 700, path);
+            //Simulation.generateRandomPassengersToFile(80, 5, 700, path);
             String[][] passengersData = Simulation.getPassengersFromFile(path);
             Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
             passengers = Simulation.sortPassengersByArrivalTime(passengers);
@@ -272,9 +273,17 @@ public class Main extends Application {
 
     class FloorPane extends Pane{
         private final SimpleIntegerProperty waitingPassengersProperty;
-        private final ImageView imageView;
+        private final ObjectProperty<Image> CallButtonsPectureProperty;
+        private final ImageView imgvFloor;
+        private final ImageView imgvPerson;
+        private final ImageView imgvCallButtons;
         private final Floor floor;
         private final Label waitingPassengersCount;
+
+        private final Image imgCallButtonOFF = new Image("images/elevatorCallOFF.png");
+        private final Image imgCallButtonUP = new Image("images/elevatorCallUP.png");
+        private final Image imgCallButtonDOWN = new Image("images/elevatorCallDOWN.png");
+        private final Image imgCallButtonBOTH = new Image("images/elevatorCallBOTH.png");
 
         public FloorPane(Floor floor, Image image) {
             this.floor = floor;
@@ -282,17 +291,33 @@ public class Main extends Application {
             waitingPassengersProperty = new SimpleIntegerProperty(floor.getWaitingPassengersCount());
             waitingPassengersCount = new Label();
             waitingPassengersCount.textProperty().bind(waitingPassengersProperty.asString());
-            waitingPassengersCount.setLayoutX(30);
-            waitingPassengersCount.setLayoutY(30);
             waitingPassengersCount.setFont(Font.font(30));
 
+            CallButtonsPectureProperty = new SimpleObjectProperty<>(new Image("images/elevatorCallOFF.png"));
 
-            imageView = new ImageView(image);
-            imageView.setFitWidth(400);
-            imageView.setFitHeight(110);
+            imgvFloor = new ImageView(image);
+            imgvFloor.setFitWidth(400);
+            imgvFloor.setFitHeight(110);
+
+            imgvPerson = new ImageView(new Image("images/personSign.png"));
+            imgvPerson.setFitWidth(20);
+            imgvPerson.setFitHeight(20);
+
+            imgvCallButtons = new ImageView();
+            imgvCallButtons.imageProperty().bindBidirectional(CallButtonsPectureProperty);
+            imgvCallButtons.setFitWidth(25);
+            imgvCallButtons.setFitHeight(50);
+            imgvCallButtons.setLayoutX(15);
+            imgvCallButtons.setLayoutY(20);
 
 
-            getChildren().addAll(imageView, waitingPassengersCount);
+            // Adding imgvFloor and waitingPassengersCount to a single HBox
+            VBox vbox = new VBox(imgvPerson, waitingPassengersCount);
+            vbox.setSpacing(1);
+            vbox.setLayoutX(60);
+            vbox.setLayoutY(10);
+
+            getChildren().addAll(imgvFloor, imgvCallButtons, vbox);
             setMaxSize(400, 110);
             setPrefSize(400, 110);
             setMinSize(400, 110);
@@ -302,6 +327,17 @@ public class Main extends Application {
         public KeyFrame kfUpdateFloor() {
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
                 waitingPassengersProperty.set(floor.getWaitingPassengersCount());
+                if (!floor.getCallButton().isPressed()){
+                    CallButtonsPectureProperty.set(imgCallButtonOFF);
+                }
+                else if (floor.getCallButton().getButtonsStatus()[0] && !floor.getCallButton().getButtonsStatus()[1]){
+                    CallButtonsPectureProperty.set(imgCallButtonUP);
+                }
+                else if (!floor.getCallButton().getButtonsStatus()[0] && floor.getCallButton().getButtonsStatus()[1]){
+                    CallButtonsPectureProperty.set(imgCallButtonDOWN);
+                } else {
+                    CallButtonsPectureProperty.set(imgCallButtonBOTH);
+                }
             });
             return keyframe;
         }
