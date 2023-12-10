@@ -32,7 +32,7 @@ public class Main extends Application {
 
 
         try {
-            //Simulation.generateRandomPassengersToFile(80, 5, 700, path);
+            Simulation.generateRandomPassengersToFile(70, 5, 300, path);
             String[][] passengersData = Simulation.getPassengersFromFile(path);
             Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
             passengers = Simulation.sortPassengersByArrivalTime(passengers);

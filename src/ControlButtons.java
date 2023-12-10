@@ -20,18 +20,22 @@ public abstract class ControlButtons {
                 buttonsStatus[i] = false;
         }
 
+        public void pressButton(int i){
+                buttonsStatus[i] = true;
+        }
+
         // this method return the number of control buttons
         public int getButtonsCount() {
-            return buttonsCount;
+                return buttonsCount;
         }
 
         // this method will return the buttons' status
         public boolean[] getButtonsStatus() {
-            return buttonsStatus;
+                return buttonsStatus;
         }
 
-        public void pressButton(int i){
-                buttonsStatus[i] = true;
+        public void setButtonsStatus(boolean[] buttonsStatus) {
+                this.buttonsStatus = buttonsStatus;
         }
 }
 

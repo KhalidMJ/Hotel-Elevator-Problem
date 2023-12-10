@@ -28,12 +28,23 @@ public class Floor {
 
     // Method to handle elevator arrival at the floor
     public synchronized void elevatorArrival(Elevator elevator) {
+        // Taking a copy of the call button in case not all the passengers will enter the elevator, then resetting it
+        boolean[] callButtonStatus = callButton.getButtonsStatus().clone();
+        callButton.clearAllButtons();
+
+        // Opening the elevator doors
+        elevator.openDoors();
+
         // Let arrived passengers leave the elevator
-            elevator.unloadPassengers();
+        elevator.unloadPassengers();
 
         // Let waiting passengers enter the elevator
-            elevator.loadPassengers(this.waitingPassengers);
+        elevator.loadPassengers(this.waitingPassengers);
 
+        // if not all the waiting passengers entered the elevator, restore the call button status
+        if (!this.waitingPassengers.isEmpty()) {
+            callButton.setButtonsStatus(callButtonStatus);
+        }
         elevatorDeparture(elevator);
     }
 

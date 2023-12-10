@@ -31,17 +31,18 @@ public class Passenger{
 
     public long waitingTime() {
         return this.waitingTime;
+    }
 
+    public void enterElevator() {
+        Simulation.delay(2);
+        System.out.println(this.name + " entered the elevator at " + Simulation.getElapsedTime()/60 + " minutes and " + Simulation.getElapsedTime()%60 + " seconds.");
     }
 
     public void exitElevator() {
         Simulation.delay(2);
         departureTime = Simulation.getElapsedTime();
         waitingTime = departureTime - this.arrivalTime;
-    }
-
-    public void enterElevator() {
-        Simulation.delay(2);
+        System.out.println(this.name + " exited the elevator at " + Simulation.getElapsedTime()/60 + " minutes and " + Simulation.getElapsedTime()%60 + " seconds. Waiting time: " + waitingTime + " seconds.");
     }
 
     public void requestUp(CallButtons callButtons) {

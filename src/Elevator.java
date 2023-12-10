@@ -26,16 +26,13 @@ public class Elevator {
     public synchronized void moveTo(int level){
         // Base case: Elevator is already at the wanted level OR There is a passenger who want to get off on the current floor
         Floor servicedFloor = currentHotel.getFloors()[currentFloor];
-        System.out.println(this.currentPassengers.size() + " " + this.totalCurrentPassengersWeight);
         if (level == this.currentFloor) {
             pause();
-            openDoors();
             servicedFloor.elevatorArrival(this);
             return;
         }
         if (cabButtons.getButtonsStatus()[this.currentFloor] || currentHotel.getFloors()[this.currentFloor].getCallButton().isPressed()){ // Stop if the cab button or the call button of the current floor is clicked
             pause();
-            openDoors();
             servicedFloor.elevatorArrival(this);
         }
 
