@@ -31,7 +31,7 @@ public class Floor {
         // Taking a copy of the call button in case not all the passengers will enter the elevator, then resetting it
         boolean[] callButtonStatus = callButton.getButtonsStatus().clone();
         callButton.clearAllButtons();
-
+        elevator.getCabButtons().clearButton(this.FLOOR_NUMBER); // Clear the cab button of the current floor
         // Opening the elevator doors
         elevator.openDoors();
 

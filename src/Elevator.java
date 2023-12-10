@@ -77,8 +77,6 @@ public class Elevator {
     //  Method to load a passenger to the elevator, it returns true if the loading is completed, false if elevator rejected the passenger
     public boolean checkPassenger(Passenger passenger){
         if ((this.currentPassengers.size() < CAPACITY) && (passenger.getWeight() + this.totalCurrentPassengersWeight < MAX_WEIGHT)){
-            currentPassengers.add(passenger);
-            totalCurrentPassengersWeight += passenger.getWeight();
             return true;
         }
         return false;
@@ -101,6 +99,9 @@ public class Elevator {
         for (Passenger passenger : waitingPassengers){
             if (checkPassenger(passenger)){
                 passenger.enterElevator();
+                currentPassengers.add(passenger);
+                totalCurrentPassengersWeight += passenger.getWeight();
+                this.cabButtons.pressButton(passenger.getDestinationFloor());
                 loadedPassengers.add(passenger);
             }
         }
@@ -160,6 +161,10 @@ public class Elevator {
 
     public DoorsStatus getDoorsStatus() {
         return doorsStatus;
+    }
+
+    public CabButtons getCabButtons() {
+        return cabButtons;
     }
 
     public void setDoorsStatus(DoorsStatus doorsStatus) {
