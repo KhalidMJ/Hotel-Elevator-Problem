@@ -56,10 +56,6 @@ public class Main extends Application {
         ElevatorInformationBox elevator1Information = new ElevatorInformationBox(elevator1);
         ElevatorInformationBox elevator2Information = new ElevatorInformationBox(elevator2);
 
-        // Combining each elevator pane with its information box into a single VBox
-        VBox elevator1Vbox = new VBox(elevator1Pane, elevator1Information);
-        VBox elevator2Vbox = new VBox(elevator2Pane, elevator2Information);
-
         // Creating floors panes
         FloorPane floor0Pane = new FloorPane(hotel.getFloors()[0], new Image("images/floor0.PNG"));
         FloorPane floor1Pane = new FloorPane(hotel.getFloors()[1], new Image("images/floor1.PNG"));
@@ -80,19 +76,18 @@ public class Main extends Application {
 
         // The main timeline for updates and animations
         Timeline timeline = new Timeline();
-        timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY());
-        timeline.getKeyFrames().addAll(elevator2Pane.kfUpdateElevatorPicture(), elevator2Pane.kfUpdateElevatorY());
-        timeline.getKeyFrames().addAll(elevator1Information.kfUpdateInformation(), elevator2Information.kfUpdateInformation());
+        timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY(), elevator1Pane.kfUpdateDisplayInformation());
+        timeline.getKeyFrames().addAll(elevator2Pane.kfUpdateElevatorPicture(), elevator2Pane.kfUpdateElevatorY(), elevator2Pane.kfUpdateDisplayInformation());
         timeline.getKeyFrames().addAll(floor0Pane.kfUpdateFloor(), floor1Pane.kfUpdateFloor(), floor2Pane.kfUpdateFloor(),
                                         floor3Pane.kfUpdateFloor(), floor4Pane.kfUpdateFloor(), floor5Pane.kfUpdateFloor(),
                                         floor6Pane.kfUpdateFloor(), floor7Pane.kfUpdateFloor());
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        HBox hbox = new HBox(elevator1Vbox, elevator2Vbox, floorsVBox);
+        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox);
         hbox.setSpacing(0);
 
-        Scene scene = new Scene(hbox, 800, 960);
+        Scene scene = new Scene(hbox, 600, 880);
         mainStage.setResizable(true);
         mainStage.setScene(scene);
         mainStage.show();
@@ -115,19 +110,21 @@ public class Main extends Application {
 // GUI Classes ----------------------------------------------------
 
     class ElevatorPane extends Pane{
-        private static final Image imgOpenDoors = new Image("images/elevatorOpen.png");
-        private static final Image imgChangingDoors = new Image("images/elevatorChanging.png");
-        private static final Image imgClosedDoors = new Image("images/elevatorClosed.png");
+        private static final Image imgOpenDoors = new Image("images/elevatorOpen.jpg");
+        private static final Image imgChangingDoors = new Image("images/elevatorChanging.jpg");
+        private static final Image imgClosedDoors = new Image("images/elevatorClosed.jpg");
 
         private final ObjectProperty<Image> elevatorDoorsPictureProperty = new SimpleObjectProperty<>(imgClosedDoors);
         private final SimpleIntegerProperty currentFloorYProperty;
+        private final SimpleIntegerProperty informationCurrentFloorYProperty;
         private final ImageView imageView;
+        ElevatorInformationBox elevatorInformation;
         private final Elevator elevator;
 
         public ElevatorPane(Elevator elevator) {
             this.elevator = elevator;
             currentFloorYProperty = new SimpleIntegerProperty(Math.abs((this.elevator.getCurrentFloor() * 110) - 770));
-
+            informationCurrentFloorYProperty = new SimpleIntegerProperty(currentFloorYProperty.getValue() + 7);
             imageView = new ImageView();
             imageView.setFitHeight(110);
             imageView.setFitWidth(100);
@@ -138,9 +135,8 @@ public class Main extends Application {
             line.setStartX(50);
             line.setEndX(50);
             line.setStartY(0);
-            line.setEndY(880);
-            line.setStroke(Color.grayRgb(30));
-            line.setFill(Color.GREENYELLOW);
+            line.setEndY(875);
+            line.setStroke(Color.grayRgb(70));
             line.setStrokeWidth(5);
 
             getChildren().add(line);
@@ -149,7 +145,12 @@ public class Main extends Application {
             setMaxSize(100, 880);
             setPrefSize(100, 880);
             setMinSize(100, 880);
-            setBackground(Background.fill(Color.GRAY));
+            setBackground(Background.fill(Color.grayRgb(25)));
+
+            elevatorInformation = new ElevatorInformationBox(this.elevator);
+            elevatorInformation.layoutYProperty().bindBidirectional(informationCurrentFloorYProperty);
+            elevatorInformation.setLayoutX(12);
+            getChildren().add(elevatorInformation);
 
         }
 
@@ -168,13 +169,19 @@ public class Main extends Application {
         public KeyFrame kfUpdateElevatorY() {
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
                 currentFloorYProperty.set(Math.abs((elevator.getCurrentFloor() * 110) - 770)); // TODO: find a way to make the animation smoother
+                informationCurrentFloorYProperty.set(currentFloorYProperty.getValue() + 7);
             });
             return keyframe;
             }
+
+        public KeyFrame kfUpdateDisplayInformation() {
+            KeyFrame keyframe = elevatorInformation.kfUpdateInformation();
+            return keyframe;
+        }
     }
 
 
-    class ElevatorInformationBox extends GridPane {
+    class ElevatorInformationBox extends HBox {
         private static final Image imgOpenSign = new Image("images/OpenSign.png");
         private static final Image imgNotOpenSign = new Image("images/notOpen.png");
         private static final Image imgUpSign = new Image("images/up.png");
@@ -207,36 +214,24 @@ public class Main extends Application {
             imageViewElevatorLevel.imageProperty().bindBidirectional(elevatorLevelPictureProperty);
 
             // Setting the size of the image views
-            imageViewDoorsStatus.setFitHeight(30);
-            imageViewDoorsStatus.setFitWidth(100);
-            imageViewElevatorStatus.setFitHeight(40);
-            imageViewElevatorStatus.setFitWidth(28);
-            imageViewElevatorLevel.setFitHeight(40);
-            imageViewElevatorLevel.setFitWidth(28);
+            imageViewDoorsStatus.setFitHeight(16);
+            imageViewDoorsStatus.setFitWidth(41);
+            imageViewElevatorStatus.setFitHeight(17);
+            imageViewElevatorStatus.setFitWidth(12);
+            imageViewElevatorLevel.setFitHeight(17);
+            imageViewElevatorLevel.setFitWidth(12);
 
+            // Adding the images to the grid pane
+            getChildren().add(imageViewDoorsStatus);
+            getChildren().add(imageViewElevatorStatus);
+            getChildren().add(imageViewElevatorLevel);
 
-            add(imageViewDoorsStatus, 0, 0,2, 1);
-            add(imageViewElevatorStatus, 0, 1, 1, 1);
-            add(imageViewElevatorLevel, 1, 1, 1, 1);
-
-            setHalignment(imageViewElevatorStatus, HPos.RIGHT);
-            setHalignment(imageViewElevatorLevel, HPos.LEFT);
-
-            // Modifying the settings of the grid and adding the signs
-            ColumnConstraints column1 = new ColumnConstraints();
-            column1.setPrefWidth(45);
-            ColumnConstraints column2 = new ColumnConstraints();
-            column2.setPrefWidth(45);
-            getColumnConstraints().addAll(column1, column2);
-
-            setVgap(10);
-            setHgap(10);
-
-            setMaxSize(100, 80);
-            setMinSize(100, 80);
-            setPrefSize(100, 80);
+            // Modifying the settings of the HBox
+            setSpacing(6);
+            setMaxSize(65, 17);
+            setMinSize(65, 17);
+            setPrefSize(65, 17);
             setBackground(Background.fill(Color.BLACK));
-
 
         }
 
