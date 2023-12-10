@@ -120,7 +120,7 @@ public class Elevator {
     public void SCAN(){
         do {
             // Move to the top floor
-            moveTo(7);
+            moveTo(this.currentHotel.getFloors().length - 1);
             // Move to the bottom floor
             moveTo(0);
         } while (!Simulation.isSimEnded());
