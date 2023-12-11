@@ -2,8 +2,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.*;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -32,7 +30,7 @@ public class Main extends Application {
 
 
         try {
-            Simulation.generateRandomPassengersToFile(70, 5, 300, path);
+            Simulation.generateRandomPassengersToFile(70, 5, 150, path);
             String[][] passengersData = Simulation.getPassengersFromFile(path);
             Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
             passengers = Simulation.sortPassengersByArrivalTime(passengers);
@@ -300,10 +298,10 @@ public class Main extends Application {
 
             imgvCallButtons = new ImageView();
             imgvCallButtons.imageProperty().bindBidirectional(CallButtonsPectureProperty);
-            imgvCallButtons.setFitWidth(25);
-            imgvCallButtons.setFitHeight(50);
-            imgvCallButtons.setLayoutX(15);
-            imgvCallButtons.setLayoutY(20);
+            imgvCallButtons.setFitWidth(23);
+            imgvCallButtons.setFitHeight(35);
+            imgvCallButtons.setLayoutX(18);
+            imgvCallButtons.setLayoutY(27);
 
 
             // Adding imgvFloor and waitingPassengersCount to a single HBox

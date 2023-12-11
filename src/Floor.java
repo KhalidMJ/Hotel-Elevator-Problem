@@ -27,25 +27,25 @@ public class Floor {
     }
 
     // Method to handle elevator arrival at the floor
-    public synchronized void elevatorArrival(Elevator elevator) {
+    public void elevatorArrival(Elevator elevator) {
         // Taking a copy of the call button in case not all the passengers will enter the elevator, then resetting it
         boolean[] callButtonStatus = callButton.getButtonsStatus().clone();
         callButton.clearAllButtons();
         elevator.getCabButtons().clearButton(this.FLOOR_NUMBER); // Clear the cab button of the current floor
-        // Opening the elevator doors
-        elevator.openDoors();
 
-        // Let arrived passengers leave the elevator
+        // Opening the elevator doors, and letting arrived passengers leave the elevator
+        elevator.openDoors();
         elevator.unloadPassengers();
 
         // Let waiting passengers enter the elevator
-        elevator.loadPassengers(this.waitingPassengers);
-
-        // if not all the waiting passengers entered the elevator, restore the call button status
-        if (!this.waitingPassengers.isEmpty()) {
-            callButton.setButtonsStatus(callButtonStatus);
+        synchronized (this){
+            elevator.loadPassengers(this.waitingPassengers);
+            // if not all the waiting passengers entered the elevator, restore the call button status
+            if (!this.waitingPassengers.isEmpty()) {
+                callButton.setButtonsStatus(callButtonStatus);
+            }
+            elevatorDeparture(elevator);
         }
-        elevatorDeparture(elevator);
     }
 
     // Method to handle elevator departure from the floor
