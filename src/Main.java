@@ -2,8 +2,13 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.*;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -106,6 +111,132 @@ public class Main extends Application {
 }
 
 // GUI Classes ----------------------------------------------------
+    class ProgramInterface extends GridPane {
+    private final StackPane Spane1;
+    private final StackPane Spane2;
+    private final StackPane Spane3;
+
+    private final Label labelINF;
+    private final GridPane GRIDPANE_S2;
+    private final Label PassengerNo;
+    private final Label PassengerTime;
+    private final Label LastPassenger;
+    private final TextField TextField1;
+    private final TextField TextField2;
+    private final TextField TextField3;
+    private final Button BtnSimulation;
+    private final GridPane GRIDPANE_S3;
+    private final Button Phase1;
+    private final Button Phase2;
+    private final Label Sellectphase;
+
+
+
+
+
+    public ProgramInterface(){
+        setStyle("-fx-background-color: Gray");
+        setAlignment(Pos.CENTER);
+        setPadding(new Insets(100));
+        setHgap(10);
+        setVgap(10);
+
+        Spane1 = new StackPane();
+        Spane2 = new StackPane();
+        Spane3 = new StackPane();
+
+
+        Spane1.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        Spane2.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        Spane3.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        GridPane.setVgrow(Spane1, Priority.ALWAYS);
+        GridPane.setVgrow(Spane2, Priority.ALWAYS);
+        GridPane.setVgrow(Spane3, Priority.ALWAYS);
+
+        GridPane.setHgrow(Spane1, Priority.ALWAYS);
+        GridPane.setHgrow(Spane2, Priority.ALWAYS);
+        GridPane.setHgrow(Spane3, Priority.ALWAYS);
+
+        add(Spane1, 0, 0);
+
+        GridPane.setRowSpan(Spane1, 2);
+
+        add(Spane2, 1, 0);
+        GridPane.setColumnSpan(Spane2, 2);
+
+        add(Spane3, 1, 1);
+        Scene scene = new Scene(this, 350, 250);
+
+        // StackPane 1 Data
+        labelINF= new Label("Hotel Elevator Problem\n\n" +
+                "Stusent Name   ,    ID\n" +
+                "Khaled Jaafari , 2036103\n"+
+                "Ammar Alwesabi , 2035083\n"+
+                "Fares Alahmadi , 2035993\n"+
+                "Younes Alhazmi , 2047592\n\n"+
+                "Instructor :khaled Al-Khalifi ");
+        StackPane.setAlignment(labelINF, Pos.TOP_CENTER);
+        labelINF.setFont(new Font("Cambria", 46));
+        Spane1.getChildren().add(labelINF);
+
+        // StackPane 2 Data
+        GRIDPANE_S2= new GridPane();
+        PassengerNo= new Label(" Number Of Passenger ");
+        PassengerTime= new Label("Time of passenger coming");
+        LastPassenger= new Label("The Time of the last person");
+        TextField1 = new TextField();
+        TextField2 = new TextField();
+        TextField3 = new TextField();
+        BtnSimulation =new Button("Simulation");
+        GridPane.setHalignment(BtnSimulation, HPos.LEFT);
+
+
+        GRIDPANE_S2.setAlignment(Pos.TOP_CENTER);
+
+
+
+        GRIDPANE_S2.add(PassengerNo, 0, 0);
+        GRIDPANE_S2.add(TextField1, 1, 0);
+        GRIDPANE_S2.add(PassengerTime, 0, 1);
+        GRIDPANE_S2.add(TextField2, 1, 1);
+        GRIDPANE_S2.add(LastPassenger, 0, 2);
+        GRIDPANE_S2.add(TextField3, 1, 2);
+        GRIDPANE_S2.add(BtnSimulation, 1, 3);
+
+        GRIDPANE_S2.setHgap(10);
+        GRIDPANE_S2.setVgap(10);
+
+
+        Spane2.getChildren().add(GRIDPANE_S2);
+
+
+
+        // StackPane 3 Data
+        GRIDPANE_S3= new GridPane();
+        Phase1 = new Button("Phase1");
+        Phase2 = new Button("phase2");
+        Sellectphase= new Label("select the phase you want ");
+        Sellectphase.setFont(new Font("Cambria", 46));
+        GRIDPANE_S3.setAlignment(Pos.TOP_CENTER);
+
+        GRIDPANE_S3.add(Sellectphase, 0, 0);
+        GRIDPANE_S3.add(Phase1, 0, 1);
+        GRIDPANE_S3.add(Phase2, 0, 2);
+
+        GRIDPANE_S3.setVgap(50);
+        Phase1.setAlignment(Pos.CENTER_RIGHT);
+        Phase2.setAlignment(Pos.CENTER_LEFT);
+
+
+
+        Spane3.getChildren().add(GRIDPANE_S3);
+
+
+
+    }
+
+}
 
     class ElevatorPane extends Pane{
         private static final Image imgOpenDoors = new Image("images/elevatorOpen.jpg");
