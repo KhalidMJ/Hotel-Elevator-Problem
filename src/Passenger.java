@@ -3,11 +3,11 @@ public class Passenger{
     private final String id;
     private final double weight;
     private final int age;
-    int currentFloor;
-    int destinationFloor;
-    long arrivalTime;
-    long departureTime;
-    long waitingTime;
+    private int currentFloor;
+    private int destinationFloor;
+    private long arrivalTime;
+    private long departureTime;
+    private long waitingTime;
 
 
     protected Passenger(String name, String id, double weight, int age, long arrivalTime, int currentFloor, int destinationFloor) {
@@ -46,10 +46,12 @@ public class Passenger{
     }
 
     public void requestUp(CallButtons callButtons) {
+        arrivalTime = Simulation.getElapsedTime();
         callButtons.requestUp();
     }
 
     public void requestDown(CallButtons callButtons) {
+        arrivalTime = Simulation.getElapsedTime();
         callButtons.requestDown();
     }
 

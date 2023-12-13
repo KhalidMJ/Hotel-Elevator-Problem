@@ -6,12 +6,6 @@ public class Guest extends Passenger{
 
     }
 
-    public Guest(int currentFloor, int destinationFloor){
-        super();
-        this.currentFloor = currentFloor;
-        this.destinationFloor = destinationFloor;
-    }
-
     public Guest() {
         super();
     }
