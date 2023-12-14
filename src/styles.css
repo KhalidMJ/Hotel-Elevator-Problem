@@ -1,0 +1,65 @@
+/* styles.css */
+
+/* General Styling */
+.root {
+
+}
+
+.initial-scene {
+    -fx-background-color: #ecf0f1;
+    -fx-padding: 15px;
+    -fx-border-color: #000000;
+    -fx-border-width: 2px;
+}
+
+.settings-box {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #000000;
+    -fx-border-width: 0.3px;
+    -fx-border-radius: 4px;
+    -fx-alignment: center;
+}
+
+/* Label Styling */
+.title-pane {
+    -fx-font-size: 50px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Trebuchet MS";
+    -fx-text-fill: #219611;
+}
+/* Label Styling */
+.settings-label {
+    -fx-font-size: 14px;
+    -fx-font-family: "Trebuchet MS";
+    -fx-text-fill: #000000;
+}
+/* Label Styling */
+.settings-title {
+    -fx-font-size: 16px;
+    -fx-font-family: "Trebuchet MS";
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+
+}
+
+/* Button Styling */
+.button {
+    -fx-background-color: #fffcff;
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+    -fx-font-family: "Trebuchet MS";
+    -fx-font-size: 14px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #330066;
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
+    -fx-cursor: hand;
+}
+.button:hover {
+    -fx-background-color: #330066;
+    -fx-text-fill: #fffcff;
+}
+.button:pressed {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: #FFFFFF;
+}

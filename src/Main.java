@@ -6,15 +6,14 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
+
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.util.Arrays;
@@ -33,7 +32,6 @@ public class Main extends Application {
         // generating and importing passengers
         String path = "src/Passengers.csv";
 
-
         try {
             Simulation.generateRandomPassengersToFile(70, 5, 150, path);
             String[][] passengersData = Simulation.getPassengersFromFile(path);
@@ -50,6 +48,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage mainStage) {
+
+        // Creating the home page interface
+        ProgramInterface programInterface = new ProgramInterface(hotel);
 
         // Creating elevator panes
         ElevatorPane elevator1Pane = new ElevatorPane(elevator1);
@@ -72,10 +73,8 @@ public class Main extends Application {
         // Adding the floors in one single VBox
         VBox floorsVBox = new VBox(floor7Pane, floor6Pane, floor5Pane, floor4Pane, floor3Pane, floor2Pane, floor1Pane, floor0Pane);
 
-        // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
-        new Thread(() -> Main.elevatorRun(elevator1, "SCAN")).start();
-        new Thread(() -> Main.elevatorRun(elevator2, "SCAN")).start();
-        new Thread(Main::passengersUpdatingRun).start();
+        // Creating the simulation statistics box
+        SimulationStatistics simulationStatistics = new SimulationStatistics();
 
         // The main timeline for updates and animations
         Timeline timeline = new Timeline();
@@ -84,23 +83,81 @@ public class Main extends Application {
         timeline.getKeyFrames().addAll(floor0Pane.kfUpdateFloor(), floor1Pane.kfUpdateFloor(), floor2Pane.kfUpdateFloor(),
                                         floor3Pane.kfUpdateFloor(), floor4Pane.kfUpdateFloor(), floor5Pane.kfUpdateFloor(),
                                         floor6Pane.kfUpdateFloor(), floor7Pane.kfUpdateFloor());
+        timeline.getKeyFrames().addAll(simulationStatistics.kfUpdateAverageWaitingTime());
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox);
-        hbox.setSpacing(0);
+        // Importing the CSS file
+        String css = this.getClass().getResource("styles.css").toExternalForm();
 
-        Scene scene = new Scene(hbox, 600, 880);
+        // Creating the home page scene
+
+        Scene homeScene = new Scene(programInterface, programInterface.getPrefWidth(), programInterface.getPrefHeight());
+        homeScene.getStylesheets().add(css);
+
+        //
+        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox, simulationStatistics);
+        hbox.setSpacing(0);
+        Scene simulationScene = new Scene(hbox, 1850, 880);
+
+        // Creating the home page scene
+        mainStage.setScene(homeScene);
         mainStage.setResizable(true);
-        mainStage.setScene(scene);
         mainStage.show();
     }
 
+    public static Scene createSimulationScene(){
+        // Creating elevator panes
+        ElevatorPane elevator1Pane = new ElevatorPane(elevator1);
+        ElevatorPane elevator2Pane = new ElevatorPane(elevator2);
 
+        // Creating elevator information box
+        ElevatorInformationBox elevator1Information = new ElevatorInformationBox(elevator1);
+        ElevatorInformationBox elevator2Information = new ElevatorInformationBox(elevator2);
 
-    private static void elevatorRun(Elevator elevator, String algorithm) {
+        // Creating floors panes
+        FloorPane floor0Pane = new FloorPane(hotel.getFloors()[0], new Image("images/floor0.PNG"));
+        FloorPane floor1Pane = new FloorPane(hotel.getFloors()[1], new Image("images/floor1.PNG"));
+        FloorPane floor2Pane = new FloorPane(hotel.getFloors()[2], new Image("images/floor2.PNG"));
+        FloorPane floor3Pane = new FloorPane(hotel.getFloors()[3], new Image("images/floor3.PNG"));
+        FloorPane floor4Pane = new FloorPane(hotel.getFloors()[4], new Image("images/floor4.PNG"));
+        FloorPane floor5Pane = new FloorPane(hotel.getFloors()[5], new Image("images/floor5.PNG"));
+        FloorPane floor6Pane = new FloorPane(hotel.getFloors()[6], new Image("images/floor6.PNG"));
+        FloorPane floor7Pane = new FloorPane(hotel.getFloors()[7], new Image("images/floor7.PNG"));
+
+        // Adding the floors in one single VBox
+        VBox floorsVBox = new VBox(floor7Pane, floor6Pane, floor5Pane, floor4Pane, floor3Pane, floor2Pane, floor1Pane, floor0Pane);
+
+        // Creating the simulation statistics box
+        SimulationStatistics simulationStatistics = new SimulationStatistics();
+
+        // The main timeline for updates and animations
+        Timeline timeline = new Timeline();
+        timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY(), elevator1Pane.kfUpdateDisplayInformation());
+        timeline.getKeyFrames().addAll(elevator2Pane.kfUpdateElevatorPicture(), elevator2Pane.kfUpdateElevatorY(), elevator2Pane.kfUpdateDisplayInformation());
+        timeline.getKeyFrames().addAll(floor0Pane.kfUpdateFloor(), floor1Pane.kfUpdateFloor(), floor2Pane.kfUpdateFloor(),
+                floor3Pane.kfUpdateFloor(), floor4Pane.kfUpdateFloor(), floor5Pane.kfUpdateFloor(),
+                floor6Pane.kfUpdateFloor(), floor7Pane.kfUpdateFloor());
+        timeline.getKeyFrames().addAll(simulationStatistics.kfUpdateAverageWaitingTime());
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+
+        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox, simulationStatistics);
+        hbox.setSpacing(0);
+        Scene simulationScene = new Scene(hbox, 1850, 880);
+        return simulationScene;
+    }
+
+    public static void startSimulation() {
+        // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
+        new Thread(() -> Main.elevatorRun(elevator1, "SCAN")).start();
+        new Thread(() -> Main.elevatorRun(elevator2, "SCAN")).start();
+        new Thread(Main::passengersUpdatingRun).start();
+    }
+
+    protected static void elevatorRun(Elevator elevator, String algorithm) {
         // start the elevator and run the simulation
-        elevator.start("SCAN");
+        elevator.start(algorithm);
     }
 
     private static void passengersUpdatingRun() {
@@ -112,130 +169,143 @@ public class Main extends Application {
 
 // GUI Classes ----------------------------------------------------
     class ProgramInterface extends GridPane {
-    private final StackPane Spane1;
-    private final StackPane Spane2;
-    private final StackPane Spane3;
+    private final StackPane titlePane;
+    private final StackPane generatingPassengersPane;
+    private final StackPane simulationStartPane;
 
-    private final Label labelINF;
-    private final GridPane GRIDPANE_S2;
-    private final Label PassengerNo;
-    private final Label PassengerTime;
-    private final Label LastPassenger;
+    private final Label titleLabel;
+    private final Label generatePassengersLabel;
+    private final GridPane gpGridPane;
+    private final Label passengersCountLabel;
+    private final Label firstPassengerArrivelTimeLabel;
+    private final Label lastPassengerArrivelTimeLabel;
     private final TextField TextField1;
     private final TextField TextField2;
     private final TextField TextField3;
-    private final Button BtnSimulation;
-    private final GridPane GRIDPANE_S3;
-    private final Button Phase1;
-    private final Button Phase2;
-    private final Label Sellectphase;
+    private final Button generatePassengersButton;
 
+    private final GridPane sspGridPane;
+    private final Label selectAlgorithmLabel;
+    private final ToggleGroup algorithmToggleGroup;
+    private final RadioButton algorithm1RadioButton;
+    private final RadioButton algorithm2RadioButton;
+    private final Button startSimulationButton;
 
-
-
-
-    public ProgramInterface(){
-        setStyle("-fx-background-color: Gray");
+    public ProgramInterface(Hotel hotel){
+        super();
+        // Styling the main GridPane
+        getStyleClass().add("initial-scene");
         setAlignment(Pos.CENTER);
-        setPadding(new Insets(100));
-        setHgap(10);
-        setVgap(10);
+        setPadding(new Insets(60));
+        setHgap(20);
+        setVgap(30);
+        setPrefSize(900, 450);
+        setMinSize(900, 450);
+        setMaxSize(900, 450);
 
-        Spane1 = new StackPane();
-        Spane2 = new StackPane();
-        Spane3 = new StackPane();
+        // Title pane
+        titlePane = new StackPane();
+        titlePane.getStyleClass().add("title-pane");
+        titlePane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        setVgrow(titlePane, Priority.ALWAYS);
+        setHgrow(titlePane, Priority.ALWAYS);
 
+        titleLabel= new Label("Hotel Elevator Problem");
+        titlePane.getChildren().add(titleLabel);
 
-        Spane1.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        Spane2.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        Spane3.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        // Generating Passengers Pane
+        generatingPassengersPane = new StackPane();
+        generatingPassengersPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        setVgrow(generatingPassengersPane, Priority.ALWAYS);
+        setHgrow(generatingPassengersPane, Priority.ALWAYS);
+        generatingPassengersPane.getStyleClass().add("settings-box");
 
-        GridPane.setVgrow(Spane1, Priority.ALWAYS);
-        GridPane.setVgrow(Spane2, Priority.ALWAYS);
-        GridPane.setVgrow(Spane3, Priority.ALWAYS);
-
-        GridPane.setHgrow(Spane1, Priority.ALWAYS);
-        GridPane.setHgrow(Spane2, Priority.ALWAYS);
-        GridPane.setHgrow(Spane3, Priority.ALWAYS);
-
-        add(Spane1, 0, 0);
-
-        GridPane.setRowSpan(Spane1, 2);
-
-        add(Spane2, 1, 0);
-        GridPane.setColumnSpan(Spane2, 2);
-
-        add(Spane3, 1, 1);
-        Scene scene = new Scene(this, 350, 250);
-
-        // StackPane 1 Data
-        labelINF= new Label("Hotel Elevator Problem\n\n" +
-                "Stusent Name   ,    ID\n" +
-                "Khaled Jaafari , 2036103\n"+
-                "Ammar Alwesabi , 2035083\n"+
-                "Fares Alahmadi , 2035993\n"+
-                "Younes Alhazmi , 2047592\n\n"+
-                "Instructor :khaled Al-Khalifi ");
-        StackPane.setAlignment(labelINF, Pos.TOP_CENTER);
-        labelINF.setFont(new Font("Cambria", 46));
-        Spane1.getChildren().add(labelINF);
-
-        // StackPane 2 Data
-        GRIDPANE_S2= new GridPane();
-        PassengerNo= new Label(" Number Of Passenger ");
-        PassengerTime= new Label("Time of passenger coming");
-        LastPassenger= new Label("The Time of the last person");
+        gpGridPane = new GridPane();
+        gpGridPane.getStyleClass().add("settings-box");
+        generatePassengersLabel = new Label("Generate Random Passengers");
+        generatePassengersLabel.getStyleClass().add("settings-title");
+        passengersCountLabel = new Label("Total Number of Passengers");
+        firstPassengerArrivelTimeLabel = new Label("Arrival Time of First Passenger");
+        lastPassengerArrivelTimeLabel = new Label("Arrival Time of Last Passenger");
+        passengersCountLabel.getStyleClass().add("settings-label");
+        firstPassengerArrivelTimeLabel.getStyleClass().add("settings-label");
+        lastPassengerArrivelTimeLabel.getStyleClass().add("settings-label");
         TextField1 = new TextField();
         TextField2 = new TextField();
         TextField3 = new TextField();
-        BtnSimulation =new Button("Simulation");
-        GridPane.setHalignment(BtnSimulation, HPos.LEFT);
+        generatePassengersButton = new Button("Generate Passengers");
 
+        gpGridPane.setAlignment(Pos.TOP_CENTER);
+        setHalignment(generatePassengersLabel, HPos.CENTER);
+        gpGridPane.add(generatePassengersLabel, 0, 0, 2, 1);
+        gpGridPane.add(passengersCountLabel, 0, 1);
+        gpGridPane.add(TextField1, 1, 1);
+        gpGridPane.add(firstPassengerArrivelTimeLabel, 0, 2);
+        gpGridPane.add(TextField2, 1, 2);
+        gpGridPane.add(lastPassengerArrivelTimeLabel, 0, 3);
+        gpGridPane.add(TextField3, 1, 3);
+        gpGridPane.add(generatePassengersButton, 1, 4);
+        gpGridPane.setHgap(10);
+        gpGridPane.setVgap(10);
 
-        GRIDPANE_S2.setAlignment(Pos.TOP_CENTER);
+        generatingPassengersPane.getChildren().add(gpGridPane);
 
+        // Simulation Start Pane
+        simulationStartPane = new StackPane();
+        simulationStartPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        setVgrow(simulationStartPane, Priority.ALWAYS);
+        setHgrow(simulationStartPane, Priority.ALWAYS);
 
+        sspGridPane = new GridPane();
+        sspGridPane.getStyleClass().add("settings-box");
+        selectAlgorithmLabel = new Label("Select Elevator Algorithm");
+        selectAlgorithmLabel.getStyleClass().add("settings-title");
 
-        GRIDPANE_S2.add(PassengerNo, 0, 0);
-        GRIDPANE_S2.add(TextField1, 1, 0);
-        GRIDPANE_S2.add(PassengerTime, 0, 1);
-        GRIDPANE_S2.add(TextField2, 1, 1);
-        GRIDPANE_S2.add(LastPassenger, 0, 2);
-        GRIDPANE_S2.add(TextField3, 1, 2);
-        GRIDPANE_S2.add(BtnSimulation, 1, 3);
+        algorithmToggleGroup = new ToggleGroup();
+        algorithm1RadioButton = new RadioButton("Algorithm 1");
+        algorithm1RadioButton.setToggleGroup(algorithmToggleGroup);
+        algorithm2RadioButton = new RadioButton("Algorithm 2");
+        algorithm2RadioButton.setToggleGroup(algorithmToggleGroup);
 
-        GRIDPANE_S2.setHgap(10);
-        GRIDPANE_S2.setVgap(10);
+        startSimulationButton = new Button("Start Simulation");
+        startSimulationButton.setOnAction(event -> {
+            if (algorithmToggleGroup.getSelectedToggle() == algorithm1RadioButton){
+                Main.startSimulation();
+                Stage mainStage = (Stage) startSimulationButton.getScene().getWindow();
+                mainStage.setScene(Main.createSimulationScene());
+            } else if (algorithmToggleGroup.getSelectedToggle() == algorithm2RadioButton){
+                //Main.elevatorRun(hotel.getElevators()[0], "C-LOOK"); // TODO
+                //Main.elevatorRun(hotel.getElevators()[0], "C-LOOK"); // TODO
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("C-LOOK is not implemented yet");
+                alert.setContentText("Please select another algorithm to start the simulation");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("No Algorithm Selected");
+                alert.setContentText("Please select an algorithm to start the simulation");
+                alert.showAndWait();
+            }
+        });
 
+        sspGridPane.setAlignment(Pos.TOP_CENTER);
+        setHalignment(selectAlgorithmLabel, HPos.CENTER);
+        setHalignment(startSimulationButton, HPos.CENTER);
+        sspGridPane.add(selectAlgorithmLabel, 0, 0);
+        sspGridPane.add(algorithm1RadioButton, 0, 1);
+        sspGridPane.add(algorithm2RadioButton, 0, 2);
+        sspGridPane.add(startSimulationButton, 0, 3, 2, 1);
+        sspGridPane.setVgap(20);
 
-        Spane2.getChildren().add(GRIDPANE_S2);
+        simulationStartPane.getChildren().add(sspGridPane);
 
-
-
-        // StackPane 3 Data
-        GRIDPANE_S3= new GridPane();
-        Phase1 = new Button("Phase1");
-        Phase2 = new Button("phase2");
-        Sellectphase= new Label("select the phase you want ");
-        Sellectphase.setFont(new Font("Cambria", 46));
-        GRIDPANE_S3.setAlignment(Pos.TOP_CENTER);
-
-        GRIDPANE_S3.add(Sellectphase, 0, 0);
-        GRIDPANE_S3.add(Phase1, 0, 1);
-        GRIDPANE_S3.add(Phase2, 0, 2);
-
-        GRIDPANE_S3.setVgap(50);
-        Phase1.setAlignment(Pos.CENTER_RIGHT);
-        Phase2.setAlignment(Pos.CENTER_LEFT);
-
-
-
-        Spane3.getChildren().add(GRIDPANE_S3);
-
-
-
+        // Adding the StackPanes to the GridPane
+        add(titlePane, 0, 0, 2, 1);
+        add(generatingPassengersPane, 0, 1);
+        add(simulationStartPane, 1, 1);
     }
-
 }
 
     class ElevatorPane extends Pane{
@@ -462,6 +532,34 @@ public class Main extends Application {
                 } else {
                     CallButtonsPectureProperty.set(imgCallButtonBOTH);
                 }
+            });
+            return keyframe;
+        }
+    }
+
+    class SimulationStatistics extends StackPane {
+        private final SimpleLongProperty averageWaitingTimeProperty;
+        private final Label averageWaitingTimeLabel;
+        public SimulationStatistics() {
+            // Creating the property and initializing it
+            averageWaitingTimeProperty = new SimpleLongProperty(Simulation.getAverageWaitingTime());
+            // Creating the label and binging it to the property
+            averageWaitingTimeLabel = new Label();
+            averageWaitingTimeLabel.textProperty().bind(averageWaitingTimeProperty.asString());
+            // Styling the label
+            averageWaitingTimeLabel.setFont(Font.font(30));
+            averageWaitingTimeLabel.setTextFill(Color.WHITE);
+            averageWaitingTimeLabel.setBackground(Background.fill(Color.BLACK));
+            averageWaitingTimeLabel.setPadding(new Insets(10));
+            averageWaitingTimeLabel.setStyle("-fx-font-weight: bold");
+
+            // Adding the label to the stack pane
+            getChildren().add(averageWaitingTimeLabel);
+        }
+        // Method to update the average waiting time
+        public KeyFrame kfUpdateAverageWaitingTime() {
+            KeyFrame keyframe = new KeyFrame(Duration.seconds(1), event -> {
+                averageWaitingTimeProperty.set(Simulation.getAverageWaitingTime());
             });
             return keyframe;
         }
