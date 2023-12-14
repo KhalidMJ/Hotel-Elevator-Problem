@@ -6,6 +6,8 @@ public class Simulation {
 
     private static long startTime;
     private static boolean isSimEnded = false;
+    private static ArrayList<Long> waitingTimes = new ArrayList<>();
+    private static long sumOfWaitingTimes = 0;
 
 
 // Method to extract passengers data form a csv file and store them into a 2D array
@@ -188,5 +190,17 @@ public class Simulation {
     public static boolean isSimEnded() {
         return isSimEnded;
     }
+
+    public static void addWaitingTime(long waitingTime){
+        waitingTimes.add(waitingTime);
+        sumOfWaitingTimes += waitingTime;
+    }
+
+    public static long getAverageWaitingTime(){
+        if (waitingTimes.isEmpty()) return 0; // If size is zero, it means no passengers have been added yet.
+        return sumOfWaitingTimes/waitingTimes.size();
+    }
 }
+
+
 
