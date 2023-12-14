@@ -2,21 +2,23 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
-
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import java.util.Arrays;
+
 
 public class Main extends Application {
     private static Hotel hotel;
@@ -39,7 +41,7 @@ public class Main extends Application {
     public void start(Stage mainStage) {
 
         // Creating the home page interface
-        ProgramInterface programInterface = new ProgramInterface(hotel, passengersFilePath);
+        ProgramInterface programInterface = new ProgramInterface(passengersFilePath);
 
         // Importing the CSS file
         String css = this.getClass().getResource("styles.css").toExternalForm();
@@ -58,10 +60,6 @@ public class Main extends Application {
         // Creating elevator panes
         ElevatorPane elevator1Pane = new ElevatorPane(elevator1);
         ElevatorPane elevator2Pane = new ElevatorPane(elevator2);
-
-        // Creating elevator information box
-        ElevatorInformationBox elevator1Information = new ElevatorInformationBox(elevator1);
-        ElevatorInformationBox elevator2Information = new ElevatorInformationBox(elevator2);
 
         // Creating floors panes
         FloorPane floor0Pane = new FloorPane(hotel.getFloors()[0], new Image("images/floor0.PNG"));
@@ -82,6 +80,8 @@ public class Main extends Application {
         // Creating the clock
         ClockPane clockPane = new ClockPane(12, 0, 0);
 
+        ResultsTablePane resultsTablePane = new ResultsTablePane();
+
         // The main timeline for updates and animations
         Timeline timeline = new Timeline();
         timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY(), elevator1Pane.kfUpdateDisplayInformation());
@@ -95,10 +95,11 @@ public class Main extends Application {
         timeline.play();
 
 
-
-        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox, simulationStatistics, clockPane);
+        HBox infoHBox = new HBox(clockPane, simulationStatistics);
+        VBox infoVbox = new VBox(infoHBox, resultsTablePane);
+        HBox hbox = new HBox(infoVbox, elevator1Pane, elevator2Pane, floorsVBox);
         hbox.setSpacing(0);
-        Scene simulationScene = new Scene(hbox, 1500, 880);
+        Scene simulationScene = new Scene(hbox, 1200, 880);
         String css = Main.class.getResource("styles.css").toExternalForm();
         simulationScene.getStylesheets().add(css);
         return simulationScene;
@@ -123,11 +124,10 @@ public class Main extends Application {
         Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
         passengers = Simulation.sortPassengersByArrivalTime(passengers);
         hotel.setPassengers(passengers);
-        System.out.println(Arrays.toString(passengers));
         } catch (Exception e){
         System.out.println(e.getMessage());
         }
-
+        Simulation.setStartTime();
         // update the passengers on each floor
         hotel.updateFloorPassengers();
     }
@@ -160,7 +160,7 @@ public class Main extends Application {
     private final Button startSimulationButton;
     private Label SSPerrorLabel;
 
-    public ProgramInterface(Hotel hotel, String passengersFilePath){
+    public ProgramInterface(String passengersFilePath){
         super();
         // Styling the main GridPane
         getStyleClass().add("initial-scene");
@@ -593,18 +593,19 @@ public class Main extends Application {
             averageWaitingTimeLabel.textProperty().bind((averageWaitingTimeProperty).asString().concat(" seconds"));
             titleLabel = new Label("Average Waiting Time");
 
+
             // Styling the labels
             averageWaitingTimeLabel.getStyleClass().add("label-waitingTime");
             titleLabel.getStyleClass().add("label-waitingTime");
+            setHalignment(averageWaitingTimeLabel, HPos.CENTER);
 
             // Adding the label to the stack pane
-
             add(titleLabel, 0, 0, 2, 1);
             add(averageWaitingTimeLabel, 0, 1,2, 1 );
         }
         // Method to update the average waiting time
         public KeyFrame kfUpdateAverageWaitingTime() {
-            KeyFrame keyframe = new KeyFrame(Duration.seconds(1), event -> {
+            KeyFrame keyframe = new KeyFrame(Duration.seconds(0.3), event -> {
                 averageWaitingTimeProperty.set(Simulation.getAverageWaitingTime());
             });
             return keyframe;
@@ -682,5 +683,60 @@ public class Main extends Application {
                 timeHoursProperty.set(((currentTime) / 3600) % 24 + this.startHour);
             });
             return keyframe;
+        }
+    }
+
+    class ResultsTablePane extends StackPane {
+        private final TableView<Passenger> table;
+        private final TableColumn<Passenger, String> nameColumn;
+        private final TableColumn<Passenger, String> idColumn;
+        private final TableColumn<Passenger, String> currentFloorColumn;
+        private final TableColumn<Passenger, String> destinationFloorColumn;
+        private final TableColumn<Passenger, String> waitingTimeColumn;
+        private static ObservableList<Passenger> data;
+
+
+
+        public ResultsTablePane(){
+            super();
+            data = FXCollections.observableArrayList();
+            table = new TableView<>();
+            table.setItems(data);
+            table.setPrefSize(500, 650);
+            table.setMaxSize(500, 650);
+            table.setMinSize(500, 650);
+
+            // Creating the columns
+            nameColumn = new TableColumn<>("Name");
+            idColumn = new TableColumn<>("ID");
+            currentFloorColumn = new TableColumn<>("Departure Floor");
+            destinationFloorColumn = new TableColumn<>("Destination Floor");
+            waitingTimeColumn = new TableColumn<>("Waiting Time");
+
+            nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+            idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+            currentFloorColumn.setCellValueFactory(new PropertyValueFactory<>("currentFloor"));
+            destinationFloorColumn.setCellValueFactory(new PropertyValueFactory<>("destinationFloor"));
+            waitingTimeColumn.setCellValueFactory(new PropertyValueFactory<>("waitingTime"));
+
+            table.getColumns().addAll(nameColumn, idColumn, currentFloorColumn, destinationFloorColumn, waitingTimeColumn);
+            table.getStyleClass().add("label-table");
+
+            // Setting the columns size
+            nameColumn.setPrefWidth(100);
+            idColumn.setPrefWidth(60);
+            currentFloorColumn.setPrefWidth(120);
+            destinationFloorColumn.setPrefWidth(120);
+            waitingTimeColumn.setPrefWidth(100);
+
+            setMaxSize(600, 730);
+            setPrefSize(600, 730);
+            setMinSize(600, 730);
+            getStyleClass().add("table-box");
+            getChildren().add(table);
+        }
+
+        public static void updateTable(Passenger passenger){
+            data.add(passenger);
         }
     }

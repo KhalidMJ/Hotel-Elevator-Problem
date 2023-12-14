@@ -42,6 +42,7 @@ public class Passenger{
         departureTime = Simulation.getElapsedTime();
         waitingTime = departureTime - this.arrivalTime;
         Simulation.addWaitingTime(this.waitingTime);
+        ResultsTablePane.updateTable(this);
     }
 
     public void requestUp(CallButtons callButtons) {
