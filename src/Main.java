@@ -30,16 +30,7 @@ public class Main extends Application {
         elevator1 = hotel.getElevators()[0];
         elevator2 = hotel.getElevators()[1];
 
-        try {
-            Simulation.generateRandomPassengersToFile(70, 5, 150, passengersFilePath);
-            String[][] passengersData = Simulation.getPassengersFromFile(passengersFilePath);
-            Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
-            passengers = Simulation.sortPassengersByArrivalTime(passengers);
-            hotel.setPassengers(passengers);
-            System.out.println(Arrays.toString(passengers));
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+
         Simulation.setStartTime();
         launch(args);
     }
@@ -48,7 +39,7 @@ public class Main extends Application {
     public void start(Stage mainStage) {
 
         // Creating the home page interface
-        ProgramInterface programInterface = new ProgramInterface(hotel);
+        ProgramInterface programInterface = new ProgramInterface(hotel, passengersFilePath);
 
         // Importing the CSS file
         String css = this.getClass().getResource("styles.css").toExternalForm();
@@ -88,6 +79,9 @@ public class Main extends Application {
         // Creating the simulation statistics box
         SimulationStatistics simulationStatistics = new SimulationStatistics();
 
+        // Creating the clock
+        ClockPane clockPane = new ClockPane(12, 0, 0);
+
         // The main timeline for updates and animations
         Timeline timeline = new Timeline();
         timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY(), elevator1Pane.kfUpdateDisplayInformation());
@@ -96,12 +90,17 @@ public class Main extends Application {
                 floor3Pane.kfUpdateFloor(), floor4Pane.kfUpdateFloor(), floor5Pane.kfUpdateFloor(),
                 floor6Pane.kfUpdateFloor(), floor7Pane.kfUpdateFloor());
         timeline.getKeyFrames().addAll(simulationStatistics.kfUpdateAverageWaitingTime());
+        timeline.getKeyFrames().add(clockPane.kfUpdateTime());
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
-        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox, simulationStatistics);
+
+
+        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox, simulationStatistics, clockPane);
         hbox.setSpacing(0);
-        Scene simulationScene = new Scene(hbox, 1850, 880);
+        Scene simulationScene = new Scene(hbox, 1500, 880);
+        String css = Main.class.getResource("styles.css").toExternalForm();
+        simulationScene.getStylesheets().add(css);
         return simulationScene;
     }
 
@@ -109,7 +108,7 @@ public class Main extends Application {
         // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
         new Thread(() -> Main.elevatorRun(elevator1, "SCAN")).start();
         new Thread(() -> Main.elevatorRun(elevator2, "SCAN")).start();
-        new Thread(Main::passengersUpdatingRun).start();
+        new Thread(Main::mainLoop).start();
     }
 
     protected static void elevatorRun(Elevator elevator, String algorithm) {
@@ -117,7 +116,18 @@ public class Main extends Application {
         elevator.start(algorithm);
     }
 
-    private static void passengersUpdatingRun() {
+    private static void mainLoop() {
+        // Exporting the passengers data from the csv file, processing the data and storing it in the hotel object.
+        try {
+        String[][] passengersData = Simulation.getPassengersFromFile(passengersFilePath);
+        Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
+        passengers = Simulation.sortPassengersByArrivalTime(passengers);
+        hotel.setPassengers(passengers);
+        System.out.println(Arrays.toString(passengers));
+        } catch (Exception e){
+        System.out.println(e.getMessage());
+        }
+
         // update the passengers on each floor
         hotel.updateFloorPassengers();
     }
@@ -136,10 +146,11 @@ public class Main extends Application {
     private final Label passengersCountLabel;
     private final Label firstPassengerArrivelTimeLabel;
     private final Label lastPassengerArrivelTimeLabel;
-    private final TextField TextField1;
-    private final TextField TextField2;
-    private final TextField TextField3;
+    private final TextField passengersCountTextField;
+    private final TextField firstArrivalTimeTextField;
+    private final TextField lastArrivalTextField;
     private final Button generatePassengersButton;
+    private final Label GRPerrorLabel;
 
     private final GridPane sspGridPane;
     private final Label selectAlgorithmLabel;
@@ -147,9 +158,9 @@ public class Main extends Application {
     private final RadioButton algorithm1RadioButton;
     private final RadioButton algorithm2RadioButton;
     private final Button startSimulationButton;
-    private Label errorLabel;
+    private Label SSPerrorLabel;
 
-    public ProgramInterface(Hotel hotel){
+    public ProgramInterface(Hotel hotel, String passengersFilePath){
         super();
         // Styling the main GridPane
         getStyleClass().add("initial-scene");
@@ -188,23 +199,72 @@ public class Main extends Application {
         passengersCountLabel.getStyleClass().add("settings-label");
         firstPassengerArrivelTimeLabel.getStyleClass().add("settings-label");
         lastPassengerArrivelTimeLabel.getStyleClass().add("settings-label");
-        TextField1 = new TextField();
-        TextField2 = new TextField();
-        TextField3 = new TextField();
+        passengersCountTextField = new TextField();
+        firstArrivalTimeTextField = new TextField();
+        lastArrivalTextField = new TextField();
         generatePassengersButton = new Button("Generate Passengers");
+        GRPerrorLabel = new Label();
+        GRPerrorLabel.setFont(Font.font(15));
+
+        passengersCountTextField.setPromptText("Enter a positive integer");
+        firstArrivalTimeTextField.setPromptText("In seconds");
+        lastArrivalTextField.setPromptText("in seconds");
 
         gpGridPane.setAlignment(Pos.TOP_CENTER);
         setHalignment(generatePassengersLabel, HPos.CENTER);
         gpGridPane.add(generatePassengersLabel, 0, 0, 2, 1);
         gpGridPane.add(passengersCountLabel, 0, 1);
-        gpGridPane.add(TextField1, 1, 1);
+        gpGridPane.add(passengersCountTextField, 1, 1);
         gpGridPane.add(firstPassengerArrivelTimeLabel, 0, 2);
-        gpGridPane.add(TextField2, 1, 2);
+        gpGridPane.add(firstArrivalTimeTextField, 1, 2);
         gpGridPane.add(lastPassengerArrivelTimeLabel, 0, 3);
-        gpGridPane.add(TextField3, 1, 3);
+        gpGridPane.add(lastArrivalTextField, 1, 3);
         gpGridPane.add(generatePassengersButton, 1, 4);
+        gpGridPane.add(GRPerrorLabel, 0, 5, 2, 1);
         gpGridPane.setHgap(10);
         gpGridPane.setVgap(10);
+
+        generatePassengersButton.setOnAction(event -> {
+            try {
+                int passengersCount = Integer.parseInt(passengersCountTextField.getText());
+                long firstArrivalTime = Long.parseLong(firstArrivalTimeTextField.getText());
+                long lastArrivalTime = Long.parseLong(lastArrivalTextField.getText());
+                if (passengersCount > 0 && firstArrivalTime >= 0 && lastArrivalTime >= 0 && firstArrivalTime < lastArrivalTime){
+                    Simulation.generateRandomPassengersToFile(passengersCount, firstArrivalTime, lastArrivalTime, passengersFilePath);
+                    GRPerrorLabel.setText("Passengers Generated Successfully");
+                    GRPerrorLabel.setTextFill(Color.GREEN);
+                    Timeline timeline = new Timeline(
+                            new KeyFrame(Duration.seconds(2), e3 -> {
+                                GRPerrorLabel.setText("");
+                            })
+                    );
+                    timeline.setCycleCount(1);
+                    timeline.play();
+                } else {
+                    // showing a label under the button to inform the user that the input is not valid, then removing it after 2 seconds
+                    GRPerrorLabel.setText("Please enter valid inputs");
+                    GRPerrorLabel.setTextFill(Color.RED);
+                    Timeline timeline = new Timeline(
+                            new KeyFrame(Duration.seconds(3), e4 -> {
+                                GRPerrorLabel.setText("");
+                            })
+                    );
+                    timeline.setCycleCount(1);
+                    timeline.play();
+                }
+            } catch (Exception e){
+                // showing a label under the button to inform the user that the input is not valid, then removing it after 2 seconds
+                GRPerrorLabel.setText("Please enter valid inputs");
+                GRPerrorLabel.setTextFill(Color.RED);
+                Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.seconds(3), e5 -> {
+                            GRPerrorLabel.setText("");
+                        })
+                );
+                timeline.setCycleCount(1);
+                timeline.play();
+            }
+        });
 
         generatingPassengersPane.getChildren().add(gpGridPane);
 
@@ -220,13 +280,15 @@ public class Main extends Application {
         selectAlgorithmLabel.getStyleClass().add("settings-title");
 
         algorithmToggleGroup = new ToggleGroup();
-        algorithm1RadioButton = new RadioButton("Algorithm 1");
+        algorithm1RadioButton = new RadioButton("SCAN (phase 1)");
+        algorithm1RadioButton.getStyleClass().add("settings-label");
         algorithm1RadioButton.setToggleGroup(algorithmToggleGroup);
-        algorithm2RadioButton = new RadioButton("Algorithm 2");
+        algorithm2RadioButton = new RadioButton("C-LOOK (phase 2)");
+        algorithm2RadioButton.getStyleClass().add("settings-label");
         algorithm2RadioButton.setToggleGroup(algorithmToggleGroup);
-        errorLabel = new Label();
-        errorLabel.setTextFill(Color.RED);
-        errorLabel.setFont(Font.font(13));
+        SSPerrorLabel = new Label();
+        SSPerrorLabel.setTextFill(Color.RED);
+        SSPerrorLabel.setFont(Font.font(13));
 
 
         startSimulationButton = new Button("Start Simulation");
@@ -240,22 +302,24 @@ public class Main extends Application {
                 //Main.elevatorRun(hotel.getElevators()[0], "C-LOOK"); // TODO
 
                 // showing a label under the button to inform the user that the algorithm is not implemented yet , then removing it after 2 seconds
-                errorLabel.setText("C-LOOK is not implemented yet");
+                SSPerrorLabel.setText("C-LOOK is not implemented yet");
 
                 Timeline timeline = new Timeline(
-                        new KeyFrame(Duration.seconds(3), e1 -> {
-                            errorLabel.setText("");
+                        new KeyFrame(Duration.seconds(3), e6 -> {
+                            SSPerrorLabel.setText("");
                         })
                 );
+                timeline.setCycleCount(1);
                 timeline.play();
             } else {
                 // showing a label under the button to inform the user that no algorithm is selected, then removing it after 2 seconds
-                errorLabel.setText("Please select an algorithm");
+                SSPerrorLabel.setText("Please select an algorithm");
                 Timeline timeline = new Timeline(
-                        new KeyFrame(Duration.seconds(3), e2 -> {
-                            errorLabel.setText("");
+                        new KeyFrame(Duration.seconds(3), e7 -> {
+                            SSPerrorLabel.setText("");
                         })
                 );
+                timeline.setCycleCount(1);
                 timeline.play();
             }
         });
@@ -267,7 +331,7 @@ public class Main extends Application {
         sspGridPane.add(algorithm1RadioButton, 0, 1);
         sspGridPane.add(algorithm2RadioButton, 0, 2);
         sspGridPane.add(startSimulationButton, 0, 3, 2, 1);
-        sspGridPane.add(errorLabel, 0, 4, 2, 1);
+        sspGridPane.add(SSPerrorLabel, 0, 4, 2, 1);
         sspGridPane.setVgap(20);
 
         simulationStartPane.getChildren().add(sspGridPane);
@@ -349,7 +413,6 @@ public class Main extends Application {
             return keyframe;
         }
     }
-
 
     class ElevatorInformationBox extends HBox {
         private static final Image imgOpenSign = new Image("images/OpenSign.png");
@@ -508,29 +571,115 @@ public class Main extends Application {
         }
     }
 
-    class SimulationStatistics extends StackPane {
+    class SimulationStatistics extends GridPane {
         private final SimpleLongProperty averageWaitingTimeProperty;
+        private final Label titleLabel;
         private final Label averageWaitingTimeLabel;
         public SimulationStatistics() {
+            super();
+            // setting the properties of the grid pane
+            setAlignment(Pos.CENTER);
+            setPadding(new Insets(10));
+            setVgap(5);
+            setMaxSize(300, 150);
+            setPrefSize(300, 150);
+            setMinSize(300, 150);
+
+            getStyleClass().add("statistics-box");
             // Creating the property and initializing it
             averageWaitingTimeProperty = new SimpleLongProperty(Simulation.getAverageWaitingTime());
             // Creating the label and binging it to the property
             averageWaitingTimeLabel = new Label();
-            averageWaitingTimeLabel.textProperty().bind(averageWaitingTimeProperty.asString());
-            // Styling the label
-            averageWaitingTimeLabel.setFont(Font.font(30));
-            averageWaitingTimeLabel.setTextFill(Color.WHITE);
-            averageWaitingTimeLabel.setBackground(Background.fill(Color.BLACK));
-            averageWaitingTimeLabel.setPadding(new Insets(10));
-            averageWaitingTimeLabel.setStyle("-fx-font-weight: bold");
+            averageWaitingTimeLabel.textProperty().bind((averageWaitingTimeProperty).asString().concat(" seconds"));
+            titleLabel = new Label("Average Waiting Time");
+
+            // Styling the labels
+            averageWaitingTimeLabel.getStyleClass().add("label-waitingTime");
+            titleLabel.getStyleClass().add("label-waitingTime");
 
             // Adding the label to the stack pane
-            getChildren().add(averageWaitingTimeLabel);
+
+            add(titleLabel, 0, 0, 2, 1);
+            add(averageWaitingTimeLabel, 0, 1,2, 1 );
         }
         // Method to update the average waiting time
         public KeyFrame kfUpdateAverageWaitingTime() {
             KeyFrame keyframe = new KeyFrame(Duration.seconds(1), event -> {
                 averageWaitingTimeProperty.set(Simulation.getAverageWaitingTime());
+            });
+            return keyframe;
+        }
+    }
+
+    class ClockPane extends StackPane{
+        private final int startHour;
+        private final int startMinute;
+        private final int startSecond;
+        private long currentTime;
+
+        private Label lblHour;
+        private Label lblMinute;
+        private Label lblSecond;
+
+        private SimpleLongProperty timeSecondsProperty;
+        private SimpleLongProperty timeMinutesProperty;
+        private SimpleLongProperty timeHoursProperty;
+
+        public ClockPane(int startHour, int startMinute, int startSecond) {
+            super();
+            this.startHour = startHour;
+            this.startMinute = startMinute;
+            this.startSecond = startSecond;
+
+            getStyleClass().add("clock-box");
+            // Set current time
+            currentTime = Simulation.getElapsedTime();
+            timeSecondsProperty = new SimpleLongProperty(currentTime + startSecond);
+            timeMinutesProperty = new SimpleLongProperty((currentTime / 60) + startMinute);
+            timeHoursProperty = new SimpleLongProperty((currentTime / 3600) + startHour);
+
+            // Create labels for displaying time
+            lblHour = new Label();
+            lblMinute = new Label();
+            lblSecond = new Label();
+            Label colon1 = new Label(":");
+            Label colon2 = new Label(":");
+            Label pm = new Label("PM");
+
+            // Set labels to display initial time
+            lblHour.textProperty().bind(timeHoursProperty.asString());
+            lblMinute.textProperty().bind(timeMinutesProperty.asString());
+            lblSecond.textProperty().bind(timeSecondsProperty.asString());
+
+
+            // Styling the labels
+            lblHour.getStyleClass().add("label-clock");
+            lblMinute.getStyleClass().add("label-clock");
+            lblSecond.getStyleClass().add("label-clock");
+            colon1.getStyleClass().add("label-clock");
+            colon2.getStyleClass().add("label-clock");
+            pm.getStyleClass().add("label-clock");
+
+
+            // Display time in a digital clock format in a HBox
+            HBox hbox = new HBox();
+            hbox.getChildren().addAll(lblHour, colon1, lblMinute, colon2, lblSecond, pm);
+            hbox.setAlignment(Pos.CENTER);
+            hbox.setSpacing(1);
+
+            setMaxSize(300, 150);
+            setPrefSize(300, 150);
+            setMinSize(300, 150);
+            getChildren().add(hbox);
+
+        }
+
+        public KeyFrame kfUpdateTime() {
+            KeyFrame keyframe = new KeyFrame(Duration.seconds(0.5), event -> {
+                currentTime = Simulation.getElapsedTime();
+                timeSecondsProperty.set((currentTime) % 60);
+                timeMinutesProperty.set(((currentTime) / 60) % 60 + + this.startMinute);
+                timeHoursProperty.set(((currentTime) / 3600) % 24 + this.startHour);
             });
             return keyframe;
         }
