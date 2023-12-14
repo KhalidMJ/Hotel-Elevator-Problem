@@ -8,6 +8,7 @@ public class Simulation {
     private static boolean isSimEnded = false;
     private static ArrayList<Long> waitingTimes = new ArrayList<>();
     private static long sumOfWaitingTimes = 0;
+    private static int passengersCount;
 
 
 // Method to extract passengers data form a csv file and store them into a 2D array
@@ -29,6 +30,7 @@ public class Simulation {
             }
 
             reader.close();
+            Simulation.passengersCount = passengers.length;
             return passengers;
         } catch (FileNotFoundException fnfe) {
             System.out.println("There is no such a file");
@@ -80,7 +82,7 @@ public class Simulation {
         String passenger;
         // Probability Distributions
         double[] currentFloorPD = {0.35, 0.10, 0.10, 0.09, 0.09, 0.09, 0.09, 0.09};
-        double[] FloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
+        double[] FloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
         double[] FloorFromGroundPD = {0.00, 0.15, 0.15, 0.14, 0.14, 0.14, 0.14, 0.14};
 
         // Generating Random Passengers
@@ -90,9 +92,24 @@ public class Simulation {
                         + returnRandomIndexFromRange(10000, 19999) + "," // Generating a random ID
                         + returnRandomIndexFromRange(30, 130) + "," // Generating a random weight
                         + returnRandomIndexFromRange(15, 90) + ","  // Generating a random age
-                        + returnRandomIndexFromRange((int)firstPasTime, (int)lastPasTime) + "," // generating a random arrival time
-                        + returnRandomIndexFromProbDist(currentFloorPD) + "," // generating a random current floor
-                        + returnRandomIndexFromProbDist(FloorFromGroundPD) + "\n"; // generating a random destination floor
+                        + returnRandomIndexFromRange((int)firstPasTime, (int)lastPasTime) + ","; // generating a random arrival time
+
+            int currentFloor = returnRandomIndexFromProbDist(currentFloorPD);
+            int destination;
+            if (currentFloor == 0){
+                destination = returnRandomIndexFromProbDist(FloorFromGroundPD);
+                while (destination == currentFloor){
+                    destination = returnRandomIndexFromProbDist(FloorFromGroundPD);
+                }
+            } else {
+                 destination = returnRandomIndexFromProbDist(FloorFromResPD);
+                while (destination == currentFloor){
+                    destination = returnRandomIndexFromProbDist(FloorFromResPD);
+                }
+            }
+
+
+            passenger = passenger + currentFloor + "," + destination + "\n";
 
             generatedPassengers[i] = passenger;
         }
@@ -194,6 +211,9 @@ public class Simulation {
     public static void addWaitingTime(long waitingTime){
         waitingTimes.add(waitingTime);
         sumOfWaitingTimes += waitingTime;
+        if (waitingTimes.size() == Simulation.passengersCount){
+            endSim();
+        }
     }
 
     public static long getAverageWaitingTime(){

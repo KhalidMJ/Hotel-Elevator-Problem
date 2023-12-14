@@ -606,6 +606,11 @@ public class Main extends Application {
         public KeyFrame kfUpdateAverageWaitingTime() {
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.3), event -> {
                 averageWaitingTimeProperty.set(Simulation.getAverageWaitingTime());
+                if (Simulation.isSimEnded()){
+                    // change its color
+                    averageWaitingTimeLabel.setTextFill(Color.GREEN);
+                    titleLabel.setTextFill(Color.GREEN);
+                }
             });
             return keyframe;
         }
