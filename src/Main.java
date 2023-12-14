@@ -22,6 +22,7 @@ public class Main extends Application {
     private static Hotel hotel;
     private static Elevator elevator1;
     private static Elevator elevator2;
+    private static final String passengersFilePath = "src/Passengers.csv";
 
     public static void main(String[] args) {
         // Creating the simulation main objects -----------------------
@@ -29,12 +30,9 @@ public class Main extends Application {
         elevator1 = hotel.getElevators()[0];
         elevator2 = hotel.getElevators()[1];
 
-        // generating and importing passengers
-        String path = "src/Passengers.csv";
-
         try {
-            Simulation.generateRandomPassengersToFile(70, 5, 150, path);
-            String[][] passengersData = Simulation.getPassengersFromFile(path);
+            Simulation.generateRandomPassengersToFile(70, 5, 150, passengersFilePath);
+            String[][] passengersData = Simulation.getPassengersFromFile(passengersFilePath);
             Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
             passengers = Simulation.sortPassengersByArrivalTime(passengers);
             hotel.setPassengers(passengers);
@@ -52,57 +50,16 @@ public class Main extends Application {
         // Creating the home page interface
         ProgramInterface programInterface = new ProgramInterface(hotel);
 
-        // Creating elevator panes
-        ElevatorPane elevator1Pane = new ElevatorPane(elevator1);
-        ElevatorPane elevator2Pane = new ElevatorPane(elevator2);
-
-        // Creating elevator information box
-        ElevatorInformationBox elevator1Information = new ElevatorInformationBox(elevator1);
-        ElevatorInformationBox elevator2Information = new ElevatorInformationBox(elevator2);
-
-        // Creating floors panes
-        FloorPane floor0Pane = new FloorPane(hotel.getFloors()[0], new Image("images/floor0.PNG"));
-        FloorPane floor1Pane = new FloorPane(hotel.getFloors()[1], new Image("images/floor1.PNG"));
-        FloorPane floor2Pane = new FloorPane(hotel.getFloors()[2], new Image("images/floor2.PNG"));
-        FloorPane floor3Pane = new FloorPane(hotel.getFloors()[3], new Image("images/floor3.PNG"));
-        FloorPane floor4Pane = new FloorPane(hotel.getFloors()[4], new Image("images/floor4.PNG"));
-        FloorPane floor5Pane = new FloorPane(hotel.getFloors()[5], new Image("images/floor5.PNG"));
-        FloorPane floor6Pane = new FloorPane(hotel.getFloors()[6], new Image("images/floor6.PNG"));
-        FloorPane floor7Pane = new FloorPane(hotel.getFloors()[7], new Image("images/floor7.PNG"));
-
-        // Adding the floors in one single VBox
-        VBox floorsVBox = new VBox(floor7Pane, floor6Pane, floor5Pane, floor4Pane, floor3Pane, floor2Pane, floor1Pane, floor0Pane);
-
-        // Creating the simulation statistics box
-        SimulationStatistics simulationStatistics = new SimulationStatistics();
-
-        // The main timeline for updates and animations
-        Timeline timeline = new Timeline();
-        timeline.getKeyFrames().addAll(elevator1Pane.kfUpdateElevatorPicture(), elevator1Pane.kfUpdateElevatorY(), elevator1Pane.kfUpdateDisplayInformation());
-        timeline.getKeyFrames().addAll(elevator2Pane.kfUpdateElevatorPicture(), elevator2Pane.kfUpdateElevatorY(), elevator2Pane.kfUpdateDisplayInformation());
-        timeline.getKeyFrames().addAll(floor0Pane.kfUpdateFloor(), floor1Pane.kfUpdateFloor(), floor2Pane.kfUpdateFloor(),
-                                        floor3Pane.kfUpdateFloor(), floor4Pane.kfUpdateFloor(), floor5Pane.kfUpdateFloor(),
-                                        floor6Pane.kfUpdateFloor(), floor7Pane.kfUpdateFloor());
-        timeline.getKeyFrames().addAll(simulationStatistics.kfUpdateAverageWaitingTime());
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-
         // Importing the CSS file
         String css = this.getClass().getResource("styles.css").toExternalForm();
 
         // Creating the home page scene
-
         Scene homeScene = new Scene(programInterface, programInterface.getPrefWidth(), programInterface.getPrefHeight());
         homeScene.getStylesheets().add(css);
 
-        //
-        HBox hbox = new HBox(elevator1Pane, elevator2Pane, floorsVBox, simulationStatistics);
-        hbox.setSpacing(0);
-        Scene simulationScene = new Scene(hbox, 1850, 880);
-
-        // Creating the home page scene
+        // Setting the stage and showing the scene
         mainStage.setScene(homeScene);
-        mainStage.setResizable(true);
+        mainStage.setResizable(false);
         mainStage.show();
     }
 
@@ -190,6 +147,7 @@ public class Main extends Application {
     private final RadioButton algorithm1RadioButton;
     private final RadioButton algorithm2RadioButton;
     private final Button startSimulationButton;
+    private Label errorLabel;
 
     public ProgramInterface(Hotel hotel){
         super();
@@ -266,6 +224,10 @@ public class Main extends Application {
         algorithm1RadioButton.setToggleGroup(algorithmToggleGroup);
         algorithm2RadioButton = new RadioButton("Algorithm 2");
         algorithm2RadioButton.setToggleGroup(algorithmToggleGroup);
+        errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+        errorLabel.setFont(Font.font(13));
+
 
         startSimulationButton = new Button("Start Simulation");
         startSimulationButton.setOnAction(event -> {
@@ -276,17 +238,25 @@ public class Main extends Application {
             } else if (algorithmToggleGroup.getSelectedToggle() == algorithm2RadioButton){
                 //Main.elevatorRun(hotel.getElevators()[0], "C-LOOK"); // TODO
                 //Main.elevatorRun(hotel.getElevators()[0], "C-LOOK"); // TODO
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("C-LOOK is not implemented yet");
-                alert.setContentText("Please select another algorithm to start the simulation");
-                alert.showAndWait();
+
+                // showing a label under the button to inform the user that the algorithm is not implemented yet , then removing it after 2 seconds
+                errorLabel.setText("C-LOOK is not implemented yet");
+
+                Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.seconds(3), e1 -> {
+                            errorLabel.setText("");
+                        })
+                );
+                timeline.play();
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("No Algorithm Selected");
-                alert.setContentText("Please select an algorithm to start the simulation");
-                alert.showAndWait();
+                // showing a label under the button to inform the user that no algorithm is selected, then removing it after 2 seconds
+                errorLabel.setText("Please select an algorithm");
+                Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.seconds(3), e2 -> {
+                            errorLabel.setText("");
+                        })
+                );
+                timeline.play();
             }
         });
 
@@ -297,6 +267,7 @@ public class Main extends Application {
         sspGridPane.add(algorithm1RadioButton, 0, 1);
         sspGridPane.add(algorithm2RadioButton, 0, 2);
         sspGridPane.add(startSimulationButton, 0, 3, 2, 1);
+        sspGridPane.add(errorLabel, 0, 4, 2, 1);
         sspGridPane.setVgap(20);
 
         simulationStartPane.getChildren().add(sspGridPane);
