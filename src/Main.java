@@ -32,7 +32,6 @@ public class Main extends Application {
         elevator1 = hotel.getElevators()[0];
         elevator2 = hotel.getElevators()[1];
 
-
         Simulation.setStartTime();
         launch(args);
     }

@@ -29,10 +29,6 @@ public class Passenger{
         this.age = 25;
     }
 
-    public long waitingTime() {
-        return this.waitingTime;
-    }
-
     public void enterElevator() {
         Simulation.delay(2);
     }
