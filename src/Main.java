@@ -19,13 +19,23 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-
+/**
+ * The Main class represents the entry point for the elevator simulation application.
+ * It extends the JavaFX Application class and defines the main components and functionality
+ * required to run the simulation.
+ * @author team9
+ */
 public class Main extends Application {
     private static Hotel hotel;
     private static Elevator elevator1;
     private static Elevator elevator2;
     private static final String passengersFilePath = "src/Passengers.csv";
 
+    /**
+     * Initializes simulation objects, sets start time, and launches JavaFX application.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         // Creating the simulation main objects -----------------------
         hotel = new Hotel(8, 2);
@@ -36,6 +46,11 @@ public class Main extends Application {
         launch(args);
     }
 
+    /**
+     * Initializes home interface, CSS, and creates home scene.
+     *
+     * @param mainStage Primary stage for the JavaFX application.
+     */
     @Override
     public void start(Stage mainStage) {
 
@@ -55,6 +70,11 @@ public class Main extends Application {
         mainStage.show();
     }
 
+    /**
+     * Creates and returns the elevator simulation scene.
+     *
+     * @return Scene representing the elevator simulation.
+     */
     public static Scene createSimulationScene(){
         // Creating elevator panes
         ElevatorPane elevator1Pane = new ElevatorPane(elevator1);
@@ -104,6 +124,9 @@ public class Main extends Application {
         return simulationScene;
     }
 
+    /**
+     * Starts elevator simulation by running main loop in background threads.
+     */
     public static void startSimulation() {
         // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
         new Thread(() -> Main.elevatorRun(elevator1, "SCAN")).start();
@@ -111,11 +134,20 @@ public class Main extends Application {
         new Thread(Main::mainLoop).start();
     }
 
+    /**
+     * Runs elevator simulation for a specific elevator using the specified algorithm.
+     *
+     * @param elevator The elevator to run the simulation for.
+     * @param algorithm The algorithm to be used by the elevator.
+     */
     protected static void elevatorRun(Elevator elevator, String algorithm) {
         // start the elevator and run the simulation
         elevator.start(algorithm);
     }
 
+    /**
+     * Main loop processing passenger data, sorting passengers, and updating floors.
+     */
     private static void mainLoop() {
         // Exporting the passengers data from the csv file, processing the data and storing it in the hotel object.
         try {
@@ -134,7 +166,10 @@ public class Main extends Application {
 }
 
 // GUI Classes ----------------------------------------------------
-    class ProgramInterface extends GridPane {
+/**
+ * Represents the home page for the elevator simulation.
+ */
+class ProgramInterface extends GridPane {
     private final StackPane titlePane;
     private final StackPane generatingPassengersPane;
     private final StackPane simulationStartPane;
@@ -159,6 +194,12 @@ public class Main extends Application {
     private final Button startSimulationButton;
     private Label SSPerrorLabel;
 
+    /**
+     * Constructs the ProgramInterface with UI elements for generating passengers
+     * and starting the simulation.
+     *
+     * @param passengersFilePath Path to the file for storing generated passenger data.
+     */
     public ProgramInterface(String passengersFilePath){
         super();
         // Styling the main GridPane
@@ -342,77 +383,102 @@ public class Main extends Application {
     }
 }
 
-    class ElevatorPane extends Pane{
-        private static final Image imgOpenDoors = new Image("images/elevatorOpen.jpg");
-        private static final Image imgChangingDoors = new Image("images/elevatorChanging.jpg");
-        private static final Image imgClosedDoors = new Image("images/elevatorClosed.jpg");
+/**
+ * Represents the graphical representation of an elevator and its path in the simulation.
+ */
+class ElevatorPane extends Pane{
+    private static final Image imgOpenDoors = new Image("images/elevatorOpen.jpg");
+    private static final Image imgChangingDoors = new Image("images/elevatorChanging.jpg");
+    private static final Image imgClosedDoors = new Image("images/elevatorClosed.jpg");
 
-        private final ObjectProperty<Image> elevatorDoorsPictureProperty = new SimpleObjectProperty<>(imgClosedDoors);
-        private final SimpleIntegerProperty currentFloorYProperty;
-        private final SimpleIntegerProperty informationCurrentFloorYProperty;
-        private final ImageView imageView;
-        ElevatorInformationBox elevatorInformation;
-        private final Elevator elevator;
+    private final ObjectProperty<Image> elevatorDoorsPictureProperty = new SimpleObjectProperty<>(imgClosedDoors);
+    private final SimpleIntegerProperty currentFloorYProperty;
+    private final SimpleIntegerProperty informationCurrentFloorYProperty;
+    private final ImageView imageView;
+    ElevatorInformationBox elevatorInformation;
+    private final Elevator elevator;
 
-        public ElevatorPane(Elevator elevator) {
-            this.elevator = elevator;
-            currentFloorYProperty = new SimpleIntegerProperty(Math.abs((this.elevator.getCurrentFloor() * 110) - 770));
-            informationCurrentFloorYProperty = new SimpleIntegerProperty(currentFloorYProperty.getValue() + 7);
-            imageView = new ImageView();
-            imageView.setFitHeight(110);
-            imageView.setFitWidth(100);
-            imageView.yProperty().bindBidirectional(currentFloorYProperty);
-            imageView.imageProperty().bindBidirectional(elevatorDoorsPictureProperty);
+    /**
+     * Constructs an ElevatorPane for displaying an elevator.
+     *
+     * @param elevator The elevator to be displayed.
+     */
+    public ElevatorPane(Elevator elevator) {
+        this.elevator = elevator;
+        currentFloorYProperty = new SimpleIntegerProperty(Math.abs((this.elevator.getCurrentFloor() * 110) - 770));
+        informationCurrentFloorYProperty = new SimpleIntegerProperty(currentFloorYProperty.getValue() + 7);
+        imageView = new ImageView();
+        imageView.setFitHeight(110);
+        imageView.setFitWidth(100);
+        imageView.yProperty().bindBidirectional(currentFloorYProperty);
+        imageView.imageProperty().bindBidirectional(elevatorDoorsPictureProperty);
 
-            Line line = new Line();
-            line.setStartX(50);
-            line.setEndX(50);
-            line.setStartY(0);
-            line.setEndY(875);
-            line.setStroke(Color.grayRgb(70));
-            line.setStrokeWidth(5);
+        Line line = new Line();
+        line.setStartX(50);
+        line.setEndX(50);
+        line.setStartY(0);
+        line.setEndY(875);
+        line.setStroke(Color.grayRgb(70));
+        line.setStrokeWidth(5);
 
-            getChildren().add(line);
-            getChildren().add(imageView);
-            setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-            setMaxSize(100, 880);
-            setPrefSize(100, 880);
-            setMinSize(100, 880);
-            setBackground(Background.fill(Color.grayRgb(25)));
+        getChildren().add(line);
+        getChildren().add(imageView);
+        setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        setMaxSize(100, 880);
+        setPrefSize(100, 880);
+        setMinSize(100, 880);
+        setBackground(Background.fill(Color.grayRgb(25)));
 
-            elevatorInformation = new ElevatorInformationBox(this.elevator);
-            elevatorInformation.layoutYProperty().bindBidirectional(informationCurrentFloorYProperty);
-            elevatorInformation.setLayoutX(12);
-            getChildren().add(elevatorInformation);
+        elevatorInformation = new ElevatorInformationBox(this.elevator);
+        elevatorInformation.layoutYProperty().bindBidirectional(informationCurrentFloorYProperty);
+        elevatorInformation.setLayoutX(12);
+        getChildren().add(elevatorInformation);
 
         }
-
-        public KeyFrame kfUpdateElevatorPicture() {
-            KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
-                if (this.elevator.getDoorsStatus() == DoorsStatus.CLOSED){
-                    elevatorDoorsPictureProperty.set(imgClosedDoors);
-                } else if (this.elevator.getDoorsStatus() == DoorsStatus.OPEN){
-                    elevatorDoorsPictureProperty.set(imgOpenDoors);
-                } else {
-                    elevatorDoorsPictureProperty.set(imgChangingDoors);
-                }
-            });
-            return keyframe;
-        }
-        public KeyFrame kfUpdateElevatorY() {
-            KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
-                currentFloorYProperty.set(Math.abs((elevator.getCurrentFloor() * 110) - 770)); // TODO: find a way to make the animation smoother
-                informationCurrentFloorYProperty.set(currentFloorYProperty.getValue() + 7);
-            });
-            return keyframe;
+    /**
+     * Generates a KeyFrame to update the elevator doors picture for the animation.
+     *
+     * @return KeyFrame for updating elevator doors picture.
+     */
+    public KeyFrame kfUpdateElevatorPicture() {
+        KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
+            if (this.elevator.getDoorsStatus() == DoorsStatus.CLOSED){
+                elevatorDoorsPictureProperty.set(imgClosedDoors);
+            } else if (this.elevator.getDoorsStatus() == DoorsStatus.OPEN){
+                elevatorDoorsPictureProperty.set(imgOpenDoors);
+            } else {
+                elevatorDoorsPictureProperty.set(imgChangingDoors);
             }
-
-        public KeyFrame kfUpdateDisplayInformation() {
-            KeyFrame keyframe = elevatorInformation.kfUpdateInformation();
-            return keyframe;
-        }
+        });
+        return keyframe;
+    }
+    /**
+     * Generates a KeyFrame to update the elevator Y position for the animation.
+     *
+     * @return KeyFrame for updating elevator Y position.
+     */
+    public KeyFrame kfUpdateElevatorY() {
+        KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
+            currentFloorYProperty.set(Math.abs((elevator.getCurrentFloor() * 110) - 770)); // TODO: find a way to make the animation smoother
+            informationCurrentFloorYProperty.set(currentFloorYProperty.getValue() + 7);
+        });
+        return keyframe;
     }
 
+    /**
+     * Generates a KeyFrame to update the display information for the elevator.
+     *
+     * @return KeyFrame for updating display information.
+     */
+    public KeyFrame kfUpdateDisplayInformation() {
+        KeyFrame keyframe = elevatorInformation.kfUpdateInformation();
+        return keyframe;
+    }
+}
+/**
+ * Represents the information display box for an elevator, including door status,
+ * elevator status, and current floor level.
+ */
     class ElevatorInformationBox extends HBox {
         private static final Image imgOpenSign = new Image("images/OpenSign.png");
         private static final Image imgNotOpenSign = new Image("images/notOpen.png");
@@ -437,6 +503,11 @@ public class Main extends Application {
         private final ImageView imageViewElevatorLevel = new ImageView();
         Elevator elevator;
 
+    /**
+     * Constructs an ElevatorInformationBox for displaying elevator information.
+     *
+     * @param elev The elevator for which the information is displayed.
+     */
         public ElevatorInformationBox(Elevator elev){
             this.elevator = elev;
 
@@ -466,7 +537,11 @@ public class Main extends Application {
             setBackground(Background.fill(Color.BLACK));
 
         }
-
+    /**
+     * Generates a KeyFrame to update the elevator information.
+     *
+     * @return KeyFrame for updating elevator information.
+     */
         public KeyFrame kfUpdateInformation(){
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
                 if (elevator.getDoorsStatus() == DoorsStatus.OPEN){
@@ -497,7 +572,9 @@ public class Main extends Application {
             return keyframe;
         }
     }
-
+/**
+ * Represents the graphical representation of a floor in the simulation.
+ */
     class FloorPane extends Pane{
         private final SimpleIntegerProperty waitingPassengersProperty;
         private final ObjectProperty<Image> CallButtonsPectureProperty;
@@ -512,6 +589,12 @@ public class Main extends Application {
         private final Image imgCallButtonDOWN = new Image("images/elevatorCallDOWN.png");
         private final Image imgCallButtonBOTH = new Image("images/elevatorCallBOTH.png");
 
+    /**
+     * Constructs a FloorPane for displaying floor information.
+     *
+     * @param floor The floor for which information is displayed.
+     * @param image The image representing the floor.
+     */
         public FloorPane(Floor floor, Image image) {
             this.floor = floor;
 
@@ -550,7 +633,11 @@ public class Main extends Application {
             setMinSize(400, 110);
             setBackground(Background.fill(Color.GRAY));
         }
-
+    /**
+     * Generates a KeyFrame to update the floor information.
+     *
+     * @return KeyFrame for updating floor information.
+     */
         public KeyFrame kfUpdateFloor() {
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.2), event -> {
                 waitingPassengersProperty.set(floor.getWaitingPassengersCount());
@@ -570,10 +657,17 @@ public class Main extends Application {
         }
     }
 
+    /**
+ * Represents the statistics display for the simulation, including average waiting time.
+ */
     class SimulationStatistics extends GridPane {
         private final SimpleLongProperty averageWaitingTimeProperty;
         private final Label titleLabel;
         private final Label averageWaitingTimeLabel;
+
+        /**
+         * Constructs a SimulationStatistics for displaying simulation statistics.
+         */
         public SimulationStatistics() {
             super();
             // setting the properties of the grid pane
@@ -602,7 +696,11 @@ public class Main extends Application {
             add(titleLabel, 0, 0, 2, 1);
             add(averageWaitingTimeLabel, 0, 1,2, 1 );
         }
-        // Method to update the average waiting time
+        /**
+         * Generates a KeyFrame to update the average waiting time.
+         *
+         * @return KeyFrame for updating average waiting time.
+         */
         public KeyFrame kfUpdateAverageWaitingTime() {
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.3), event -> {
                 averageWaitingTimeProperty.set(Simulation.getAverageWaitingTime());
@@ -615,7 +713,9 @@ public class Main extends Application {
             return keyframe;
         }
     }
-
+/**
+ * Represents a clock display for the simulation, showing the elapsed time.
+ */
     class ClockPane extends StackPane{
         private final int startHour;
         private final int startMinute;
@@ -630,6 +730,13 @@ public class Main extends Application {
         private SimpleLongProperty timeMinutesProperty;
         private SimpleLongProperty timeHoursProperty;
 
+    /**
+     * Constructs a ClockPane for displaying the simulation clock.
+     *
+     * @param startHour    The starting hour of the simulation.
+     * @param startMinute  The starting minute of the simulation.
+     * @param startSecond  The starting second of the simulation.
+     */
         public ClockPane(int startHour, int startMinute, int startSecond) {
             super();
             this.startHour = startHour;
@@ -679,6 +786,11 @@ public class Main extends Application {
 
         }
 
+    /**
+     * Generates a KeyFrame to update the simulation clock time.
+     *
+     * @return KeyFrame for updating simulation clock time.
+     */
         public KeyFrame kfUpdateTime() {
             KeyFrame keyframe = new KeyFrame(Duration.seconds(0.5), event -> {
                 currentTime = Simulation.getElapsedTime();
@@ -690,6 +802,9 @@ public class Main extends Application {
         }
     }
 
+/**
+ * Represents a pane containing a table displaying simulation results.
+ */
     class ResultsTablePane extends StackPane {
         private final TableView<Passenger> table;
         private final TableColumn<Passenger, String> nameColumn;
@@ -700,7 +815,9 @@ public class Main extends Application {
         private static ObservableList<Passenger> data;
 
 
-
+    /**
+     * Constructs a ResultsTablePane for displaying simulation results.
+     */
         public ResultsTablePane(){
             super();
             data = FXCollections.observableArrayList();
@@ -740,6 +857,11 @@ public class Main extends Application {
             getChildren().add(table);
         }
 
+    /**
+     * Updates the table with the information of a new passenger.
+     *
+     * @param passenger The passenger to be added to the table.
+     */
         public static void updateTable(Passenger passenger){
             data.add(passenger);
         }

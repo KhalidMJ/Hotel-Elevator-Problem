@@ -2,16 +2,46 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Simulation class represents the simulation environment.
+ * It includes methods for extracting passenger data from a CSV file, creating Passenger objects,
+ * generating random passengers, and simulating the passage of time.
+ * @author Khalid
+ */
 public class Simulation {
 
+    /**
+     * The start time of the simulation in milliseconds.
+     */
     private static long startTime;
+
+    /**
+     * A flag indicating whether the simulation has ended.
+     */
     private static boolean isSimEnded = false;
+
+    /**
+     * List to store waiting times of passengers during the simulation.
+     */
     private static ArrayList<Long> waitingTimes = new ArrayList<>();
+
+    /**
+     * The sum of waiting times of all passengers.
+     */
     private static long sumOfWaitingTimes = 0;
+
+    /**
+     * The total number of passengers in the simulation.
+     */
     private static int passengersCount;
 
 
-// Method to extract passengers data form a csv file and store them into a 2D array
+    /**
+     * Method to extract passengers data from a CSV file and store them into a 2D array.
+     *
+     * @param path The path to the CSV file.
+     * @return A 2D array representing passengers data.
+     */
     public static String[][] getPassengersFromFile(String path) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -43,7 +73,13 @@ public class Simulation {
         }
     }
 
-    // Method to create Passenger objects using the data from 2D array and return them in an array.
+    /**
+     * Method to create Passenger objects using the data from a 2D array and return them in an array.
+     *
+     * @param passengersData The 2D array containing passengers' data.
+     * @return An array of Passenger objects.
+     * @throws IOException If there is an issue reading the data.
+     */
     public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData) throws IOException {
         if (passengersData == null) return null;
 
@@ -76,7 +112,13 @@ public class Simulation {
         return passengerObjects;
     }
 
-    // Method to generate passengers data with random attributes and store them in CSV file
+    /**
+     * Method to generate passengers' data with random attributes and store them in a CSV file.
+     * @param count      The number of passengers to generate.
+     * @param firstPasTime The earliest arrival time for passengers in seconds.
+     * @param lastPasTime The latest arrival time for passengers in seconds.
+     * @param path       The path to the CSV file to store generated passengers data.
+     */
     public static void generateRandomPassengersToFile(int count, long firstPasTime, long lastPasTime, String path){
         String[] generatedPassengers = new String[count];
         String passenger;
@@ -129,7 +171,13 @@ public class Simulation {
 
     }
 
-    // Method to return an index based on a probability distribution given by user
+    /**
+     * Method to return an index based on a probability distribution given by the user.
+     *
+     * @param dist The probability distribution array. The sum of its elements must be 1.0.
+     * @return The selected index based on the given probability distribution.
+     * @throws ArithmeticException If the sum of the probability distribution is not equal to 1.0.
+     */
     private static int returnRandomIndexFromProbDist(double[] dist) throws ArithmeticException{
         if (Arrays.stream(dist).sum() != 1.0) throw new ArithmeticException("The sum of the probability distribution must be 1!");
 
@@ -143,6 +191,12 @@ public class Simulation {
         return 0;
     }
 
+    /**
+     * Method to sort an array of passengers by arrival time.
+     *
+     * @param passengers The array of passengers to be sorted.
+     * @return A sorted array of passengers by arrival time.
+     */
     public static Passenger[] sortPassengersByArrivalTime(Passenger[] passengers){
         Passenger[] sortedPassengers = passengers.clone();
         Passenger temp;
@@ -158,12 +212,22 @@ public class Simulation {
         return sortedPassengers;
     }
 
-    // Method to return a random integer from a range.
+    /**
+     * Method to return a random integer from a specified range.
+     *
+     * @param min The minimum value of the range.
+     * @param max The maximum value of the range.
+     * @return A random integer within the specified range.
+     */
     public static int returnRandomIndexFromRange(int min, int max){
         return java.util.concurrent.ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    // Method to return a random name string
+    /**
+     * Method to return a random name from a predefined list of names.
+     *
+     * @return A randomly selected name.
+     */
     private static String returnRandomName(){
         String[] names = {"Khalid", "Ammar", "Fares", "Yones", "Anas", "Muhammed", "Al-Waleed",
                 "Sami", "Saud", "Marwan", "Thamer", "Mazen", "Hamad", "Rayan", "Salem", "Moath",
@@ -178,7 +242,11 @@ public class Simulation {
         return names[index];
     }
 
-    // This method will simulate a passage of time
+    /**
+     * This method will simulate the passage of time by causing the current thread to sleep.
+     *
+     * @param seconds The duration, in seconds, for which the thread will be suspended.
+     */
     public static void delay(double seconds){
         try {
             Thread.sleep((long)(seconds * 1000));
@@ -187,27 +255,44 @@ public class Simulation {
         }
     }
 
-    // This method will indicate that the simulation has ended
+    /**
+     * This method will indicate that the simulation has ended.
+     */
     public static void endSim(){
         isSimEnded = true;
     }
 
-    // This method will set the start time of the simulation
+    /**
+     * Method to set the start time of the simulation.
+     */
     public static void setStartTime(){
         startTime = System.currentTimeMillis();
     }
 
-    // This method will return the elapsed time since the start of the simulation
+    /**
+     * Method to return the elapsed time since the start of the simulation.
+     *
+     * @return The elapsed time in seconds.
+     */
     public static long getElapsedTime(){
         long elapsedTime = (System.currentTimeMillis() / 1000) - (startTime / 1000);
         return elapsedTime;
     }
 
-    // This method will return true if the simulation has ended
+    /**
+     * Method to return true if the simulation has ended.
+     *
+     * @return True if the simulation has ended, false otherwise.
+     */
     public static boolean isSimEnded() {
         return isSimEnded;
     }
 
+    /**
+     * Method to add waiting time for a passenger and check if the simulation has ended.
+     *
+     * @param waitingTime The waiting time of a passenger.
+     */
     public static void addWaitingTime(long waitingTime){
         waitingTimes.add(waitingTime);
         sumOfWaitingTimes += waitingTime;
@@ -216,11 +301,13 @@ public class Simulation {
         }
     }
 
+    /**
+     * Method to get the average waiting time of all passengers.
+     *
+     * @return The average waiting time in seconds.
+     */
     public static long getAverageWaitingTime(){
         if (waitingTimes.isEmpty()) return 0; // If size is zero, it means no passengers have been added yet.
         return sumOfWaitingTimes/waitingTimes.size();
     }
 }
-
-
-

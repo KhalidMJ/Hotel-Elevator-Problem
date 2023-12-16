@@ -1,39 +1,80 @@
 
-// ControlButtons class has these attributes:
+/**
+ * Abstract class representing control buttons.
+ * @author Ammar
+ */
 public abstract class ControlButtons {
+
+        /**
+         * The number of buttons in the control panel.
+         */
         private int buttonsCount;
+
+        /**
+         * The status of all the buttons (true if pressed, false if not pressed).
+         */
         private boolean[] buttonsStatus;  // status of all the buttons
 
-
+        /**
+         * Constructs a new ControlButtons instance with a specified number of buttons.
+         *
+         * @param buttonsCount The number of buttons in the control panel.
+         */
         public ControlButtons(int buttonsCount){
                 this.buttonsCount = buttonsCount;
                 this.buttonsStatus = new boolean[buttonsCount];
         }
-        // this method to clear all buttons
+
+        /**
+         * Clears the status of all buttons (sets them to false).
+         */
         public void clearAllButtons(){
                 for (int i=0; i<buttonsCount; i++){
                         buttonsStatus[i] = false;
                 }
         }
-        // this method to clear a button
+
+        /**
+         * Clears the status of a specific button (sets it to false).
+         *
+         * @param i The index of the button to clear.
+         */
         public void clearButton(int i){
                 buttonsStatus[i] = false;
         }
 
+        /**
+         * Presses a specific button (sets it to true).
+         *
+         * @param i The index of the button to press.
+         */
         public void pressButton(int i){
                 buttonsStatus[i] = true;
         }
 
-        // this method return the number of control buttons
+        /**
+         * Gets the number of buttons in the control panel.
+         *
+         * @return The number of buttons in the control panel.
+         */
         public int getButtonsCount() {
                 return buttonsCount;
         }
 
-        // this method will return the buttons' status
+        /**
+         * Gets the status of all buttons.
+         *
+         * @return An array representing the status of all buttons.
+         */
         public boolean[] getButtonsStatus() {
                 return buttonsStatus;
         }
 
+        /**
+         * Sets the status of all buttons.
+         *
+         * @param buttonsStatus The array representing the status of all buttons.
+         */
         public void setButtonsStatus(boolean[] buttonsStatus) {
                 this.buttonsStatus = buttonsStatus;
         }
