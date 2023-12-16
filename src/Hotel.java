@@ -42,7 +42,6 @@ public class Hotel {
         return this.elevators;
     }
 
-
 }
 
 
