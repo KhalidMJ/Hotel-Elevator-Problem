@@ -1,16 +1,16 @@
-public class Passenger{
+public abstract class Passenger implements RequestElevator{
     private final String name;
     private final String id;
     private final double weight;
     private final int age;
-    private int currentFloor;
-    private int destinationFloor;
+    private Floor currentFloor;
+    private Floor destinationFloor;
     private long arrivalTime;
     private long departureTime;
     private long waitingTime;
 
 
-    public Passenger(String name, String id, double weight, int age, long arrivalTime, int currentFloor, int destinationFloor) {
+    public Passenger(String name, String id, double weight, int age, long arrivalTime, Floor currentFloor, Floor destinationFloor) {
         this.name = name;
         this.id = id;
         this.weight = weight;
@@ -29,24 +29,26 @@ public class Passenger{
 
     // Method to simulate the passenger entering the elevator, and the time it takes to do so.
     public void enterElevator() {
-        Simulation.delay(2);
+        Simulation.delay(1.8);
     }
 
     // Method to simulate the passenger exiting the elevator, and calculate the waiting time.
     public void exitElevator() {
-        Simulation.delay(2);
+        Simulation.delay(1.8);
         departureTime = Simulation.getElapsedTime();
         waitingTime = departureTime - this.arrivalTime;
         Simulation.addWaitingTime(this.waitingTime);
         ResultsTablePane.updateTable(this); // updating the results table
     }
 
-    public void requestUp(CallButtons callButtons) {
+    public void requestUp() {
+        CallButtons callButtons = currentFloor.getCallButton();
         arrivalTime = Simulation.getElapsedTime();
         callButtons.requestUp();
     }
 
-    public void requestDown(CallButtons callButtons) {
+    public void requestDown() {
+        CallButtons callButtons = currentFloor.getCallButton();
         arrivalTime = Simulation.getElapsedTime();
         callButtons.requestDown();
     }
@@ -70,11 +72,11 @@ public class Passenger{
 
 
     public int getCurrentFloor() {
-        return this.currentFloor;
+        return this.currentFloor.getFloorNumber();
     }
 
     public int getDestinationFloor() {
-        return this.destinationFloor;
+        return this.destinationFloor.getFloorNumber();
     }
 
 

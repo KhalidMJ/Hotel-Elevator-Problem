@@ -19,9 +19,9 @@ public class Floor {
         waitingPassengers.add(person);
         // Notify the elevator system that the call button has been pressed
         if (person.getDestinationFloor() < FLOOR_NUMBER){
-            person.requestDown(this.callButton);
+            person.requestDown();
         } else {
-            person.requestUp(this.callButton);
+            person.requestUp();
         }
     }
 

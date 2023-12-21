@@ -10,8 +10,7 @@ public class Simulation {
     private static long sumOfWaitingTimes = 0;
     private static int passengersCount;
 
-
-// Method to extract passengers data form a csv file and store them into a 2D array
+    // Method to extract passengers data form a csv file and store them into a 2D array
     public static String[][] getPassengersFromFile(String path) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
@@ -46,7 +45,7 @@ public class Simulation {
     }
 
     // Method to create Passenger objects using the data from 2D array and return them in an array.
-    public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData) throws IOException {
+    public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData, Hotel hotel) throws IOException {
         // Check if the input data is null
         if (passengersData == null) return null;
 
@@ -72,10 +71,10 @@ public class Simulation {
             destinationFloor = Integer.parseInt(data[7]);
 
             if (data[0].equalsIgnoreCase("Guest")) {
-                Guest passenger = new Guest(name, id, weight, age,arrivalTime, currentFloor, destinationFloor);
+                Guest passenger = new Guest(name, id, weight, age,arrivalTime, hotel.getFloors()[currentFloor], hotel.getFloors()[destinationFloor]);
                 passengerObjects[i] = passenger;
             } else if (data[0].equalsIgnoreCase("Staff")) {
-                Staff passenger = new Staff(name, id, weight, age, arrivalTime, currentFloor, destinationFloor);
+                Staff passenger = new Staff(name, id, weight, age, arrivalTime, hotel.getFloors()[currentFloor], hotel.getFloors()[destinationFloor]);
                 passengerObjects[i] = passenger;
             } else {
                 // Throw an IOException if the CSV file format is not correct
@@ -91,36 +90,39 @@ public class Simulation {
         String[] generatedPassengers = new String[count];
         String passenger;
         // Probability Distributions for Guest passengers
-        double[] guestCurrentFloorPD = {0.35, 0.10, 0.10, 0.09, 0.09, 0.09, 0.09, 0.09};
-        double[] guestDestinationFloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
+        double[] guestCurrentFloorPD = {0.35, 0.11, 0.11, 0.11, 0.10, 0.08, 0.07, 0.07};
+        double[] guestDestinationFloorFromResPD = {0.65, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05};
         double[] guestDestinationFloorFromGroundPD = {0.00, 0.15, 0.15, 0.14, 0.14, 0.14, 0.14, 0.14};
 
         // Probability Distributions for Staff passengers
-        double[] staffCurrentFloorPD = {0.05, 0.14, 0.14, 0.13, 0.14, 0.14, 0.13, 0.13};
-        double[] staffDestinationFloorFromResPD = {0.00, 0.14, 0.14, 0.14, 0.14, 0.14, 0.15, 0.15};
-        double[] staffDestinationFloorFromGroundPD = {0.00, 0.14, 0.14, 0.14, 0.14, 0.14, 0.15, 0.15};
+        double[] staffCurrentFloorPD = {0.08, 0.15, 0.15, 0.15, 0.14, 0.12, 0.11, 0.10};
+        double[] staffDestinationFloorFromResPD = {0.05, 0.15, 0.14, 0.14, 0.13, 0.13, 0.13, 0.13};
+        double[] staffDestinationFloorFromGroundPD = {0.00, 0.15, 0.15, 0.14, 0.14, 0.14, 0.14, 0.14};
 
         // Generating Random Passengers
         for (int i = 0; i < count; i++){
-            passenger = "guest,"
-                        + returnRandomName() + "," // Generating a random name
+            // 20% chance to generate a staff passenger
+            boolean isStaff = Math.random() <= 0.3;
+
+            passenger = isStaff ? "Staff," : "Guest,"; // Adding the passenger type to the string
+            passenger += returnRandomName() + "," // Generating a random name
                         + returnRandomIndexFromRange(10000, 19999) + "," // Generating a random ID
                         + returnRandomIndexFromRange(30, 130) + "," // Generating a random weight
                         + returnRandomIndexFromRange(15, 70) + ","  // Generating a random age
                         + returnRandomIndexFromRange((int)firstPasTime, (int)lastPasTime) + ","; // generating a random arrival time
 
             // generating a random current floor and destination floor based on the probability distributions, and making sure that the destination floor is not the same as the current floor
-            int currentFloor = returnRandomIndexFromProbDist(guestCurrentFloorPD);
+            int currentFloor = returnRandomIndexFromProbDist(isStaff ? staffCurrentFloorPD : guestCurrentFloorPD);
             int destination;
             if (currentFloor == 0){
-                destination = returnRandomIndexFromProbDist(guestDestinationFloorFromGroundPD);
+                destination = returnRandomIndexFromProbDist(isStaff ? staffDestinationFloorFromGroundPD : guestDestinationFloorFromGroundPD);
                 while (destination == currentFloor){
-                    destination = returnRandomIndexFromProbDist(guestDestinationFloorFromGroundPD);
+                    destination = returnRandomIndexFromProbDist(isStaff ? staffDestinationFloorFromGroundPD : guestDestinationFloorFromGroundPD);
                 }
             } else {
-                 destination = returnRandomIndexFromProbDist(guestDestinationFloorFromResPD);
+                 destination = returnRandomIndexFromProbDist(isStaff ? staffDestinationFloorFromResPD : guestDestinationFloorFromResPD);
                 while (destination == currentFloor){
-                    destination = returnRandomIndexFromProbDist(guestDestinationFloorFromResPD);
+                    destination = returnRandomIndexFromProbDist(isStaff ? staffDestinationFloorFromResPD : guestDestinationFloorFromResPD);
                 }
             }
 

@@ -1,7 +1,7 @@
 public class Guest extends Passenger{
 
     // Constructor
-    public Guest(String name, String id, double weight, int age, long arrivalTime, int currentFloor, int destinationFloor) {
+    public Guest(String name, String id, double weight, int age, long arrivalTime, Floor currentFloor, Floor destinationFloor) {
         super(name, id, weight, age, arrivalTime, currentFloor,destinationFloor);
     }
 

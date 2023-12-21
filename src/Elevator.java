@@ -4,7 +4,7 @@ import java.util.Iterator;
 public class Elevator {
     private final int CAPACITY = 10; // in passengers
     private final double MAX_WEIGHT = 900; // in kg
-    private final int SPEED = 2; // seconds per floor
+    private final double SPEED = 1.5; // seconds per floor
 
     private Hotel currentHotel; // A reference to the hotel that this elevator belong to
     private int currentFloor; // The current floor of the elevator
@@ -24,8 +24,8 @@ public class Elevator {
         this.doorsStatus = DoorsStatus.CLOSED;
     }
 
-    // Recursive Method to move the elevator to a requested floor
-    public synchronized void moveTo(int level){
+    // Recursive Method to move the elevator to a requested floor, it will check every floor on the way for requests.
+    public synchronized void moveToAndScan(int level){
         // Base case: Elevator is already at the wanted level OR There is a passenger who want to get off on the current floor
         Floor servicedFloor = currentHotel.getFloors()[currentFloor];
         if (level == this.currentFloor) {
@@ -34,22 +34,32 @@ public class Elevator {
             return;
         }
         // Stop if the cab button or the call button of the current floor is clicked
-        if (cabButtons.getButtonsStatus()[this.currentFloor] || getCallButtonOfCurrentFloor().isPressed()){
+        if (cabButtons.getButtonsStatus()[this.currentFloor] || getCallButtonOfFloor(this.currentFloor).isPressed()){
             pause();
             servicedFloor.elevatorArrival(this);
         }
 
         // Check the target floor and start moving the elevator, simulate the movement by delaying the thread.
         if (level > this.currentFloor) {
-            this.elevatorStatus = ElevatorStatus.MOVING_UP;
-            Simulation.delay(this.SPEED);
-            this.currentFloor++;
+            moveUp();
         } else {
-            this.elevatorStatus = ElevatorStatus.MOVING_DOWN;
-            Simulation.delay(this.SPEED);
-            this.currentFloor--;
+            moveDown();
         }
-        moveTo(level); // Recursive call
+        moveToAndScan(level); // Recursive call
+    }
+
+    // Method to move the elevator up one floor
+    public synchronized void moveUp(){
+        this.elevatorStatus = ElevatorStatus.MOVING_UP;
+        Simulation.delay(this.SPEED);
+        this.currentFloor++;
+    }
+
+    // Method to move the elevator down one floor
+    public synchronized void moveDown(){
+        this.elevatorStatus = ElevatorStatus.MOVING_DOWN;
+        Simulation.delay(this.SPEED);
+        this.currentFloor--;
     }
 
     // Method to pause the elevator and update its status
@@ -65,7 +75,7 @@ public class Elevator {
         }
         // update the doors status, and simulate the opening of the doors
         this.doorsStatus = DoorsStatus.OPENING;
-        Simulation.delay(1); // It would take the doors 1 seconds to be fully open
+        Simulation.delay(1.5); // It would take the doors 2 seconds to be fully open
         this.doorsStatus = DoorsStatus.OPEN;
     }
 
@@ -77,8 +87,35 @@ public class Elevator {
         }
         // update the doors status, and simulate the closing of the doors
         this.doorsStatus = DoorsStatus.CLOSING;
-        Simulation.delay(1); // It would take the doors 1 seconds to be fully closed
+        Simulation.delay(1.5); // It would take the doors 1 seconds to be fully closed
         this.doorsStatus = DoorsStatus.CLOSED;
+    }
+
+
+    // Method to check if there are requests above the current floor
+    public boolean hasRequestsAbove(){
+        System.out.println("Checking up");
+        for (int i = this.currentFloor + 1; i < this.currentHotel.getFloors().length; i++){
+            if (this.cabButtons.getButtonsStatus()[i] || getCallButtonOfFloor(i).isPressed()){
+                System.out.println("Found up");
+                return true;
+            }
+        }
+        System.out.println("Not found up");
+        return false;
+    }
+
+    // Method to check if there are requests below the current floor
+    public boolean hasRequestsBelow(){
+        System.out.println("Checking down");
+        for (int i = this.currentFloor - 1; i >= 0; i--){
+            if (this.cabButtons.getButtonsStatus()[i] || getCallButtonOfFloor(i).isPressed()){
+                System.out.println("Found down");
+                return true;
+            }
+        }
+        System.out.println("Not found down");
+        return false;
     }
 
     //  Method to load a passenger to the elevator, it returns true if the loading is completed, false if elevator rejected the passenger
@@ -103,6 +140,7 @@ public class Elevator {
         }
     }
 
+    // Method to load passengers who are waiting on the floor
     public synchronized void loadPassengers(ArrayList<Passenger> waitingPassengers) {
         // saving a copy of the passengers who are loaded into the elevator
         ArrayList<Passenger> loadedPassengers = new ArrayList<>();
@@ -124,6 +162,8 @@ public class Elevator {
     public void start(String algorithm){
         if (algorithm.equals("SCAN")){
             SCAN();
+        } else if (algorithm.equals("C-LOOK")){
+            C_LOOK();
         }
     }
 
@@ -131,9 +171,34 @@ public class Elevator {
     public void SCAN(){
         do {
             // Move to the top floor
-            moveTo(this.currentHotel.getFloors().length - 1);
+            moveToAndScan(this.currentHotel.getFloors().length - 1);
             // Move to the bottom floor
-            moveTo(0);
+            moveToAndScan(0);
+        } while (!Simulation.isSimEnded());
+    }
+
+    public void C_LOOK(){
+        do {
+            // move up once until there are no requests above
+            while (hasRequestsAbove()){
+                if (cabButtons.getButtonsStatus()[this.currentFloor] || getCallButtonOfFloor(this.currentFloor).isPressedUp()){
+                    pause();
+                    currentHotel.getFloors()[this.currentFloor].elevatorArrival(this);
+                }
+                moveUp();
+            }
+            // move down once until there are no requests below
+            while (hasRequestsBelow()){
+                if (cabButtons.getButtonsStatus()[this.currentFloor] || getCallButtonOfFloor(this.currentFloor).isPressedDown()){
+                    pause();
+                    currentHotel.getFloors()[this.currentFloor].elevatorArrival(this);
+                }
+                moveDown();
+            }
+            if (cabButtons.getButtonsStatus()[this.currentFloor] || getCallButtonOfFloor(this.currentFloor).isPressed()){
+                pause();
+                currentHotel.getFloors()[this.currentFloor].elevatorArrival(this);
+            }
         } while (!Simulation.isSimEnded());
     }
 
@@ -151,7 +216,7 @@ public class Elevator {
     }
 
     // gets the speed of the elevator
-    public int getSPEED() {
+    public double getSPEED() {
         return SPEED;
     }
 
@@ -160,8 +225,8 @@ public class Elevator {
         return currentFloor;
     }
     
-    private CallButtons getCallButtonOfCurrentFloor() {
-        Floor currentFloor = this.currentHotel.getFloors()[this.currentFloor];
+    private CallButtons getCallButtonOfFloor(int floor) {
+        Floor currentFloor = this.currentHotel.getFloors()[floor];
         return currentFloor.getCallButton();
     }
 

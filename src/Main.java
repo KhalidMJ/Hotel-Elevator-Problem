@@ -104,10 +104,10 @@ public class Main extends Application {
         return simulationScene;
     }
 
-    public static void startSimulation() {
+    public static void startSimulation(String algorithm) {
         // Running the main loop in a background thread to split it from the GUI Thread, hence we can update the GUI in real time.
-        new Thread(() -> Main.elevatorRun(elevator1, "SCAN")).start();
-        new Thread(() -> Main.elevatorRun(elevator2, "SCAN")).start();
+        new Thread(() -> Main.elevatorRun(elevator1, algorithm)).start();
+        new Thread(() -> Main.elevatorRun(elevator2, algorithm)).start();
         new Thread(Main::mainLoop).start();
     }
 
@@ -120,7 +120,7 @@ public class Main extends Application {
         // Exporting the passengers data from the csv file, processing the data and storing it in the hotel object.
         try {
         String[][] passengersData = Simulation.getPassengersFromFile(passengersFilePath);
-        Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData);
+        Passenger[] passengers = Simulation.turnPassengersArrayIntoObjects(passengersData, hotel);
         passengers = Simulation.sortPassengersByArrivalTime(passengers);
         hotel.setPassengers(passengers);
         } catch (Exception e){
@@ -292,23 +292,14 @@ public class Main extends Application {
         startSimulationButton = new Button("Start Simulation");
         startSimulationButton.setOnAction(event -> {
             if (algorithmToggleGroup.getSelectedToggle() == algorithm1RadioButton){
-                Main.startSimulation();
+                Main.startSimulation("SCAN");
                 Stage mainStage = (Stage) startSimulationButton.getScene().getWindow();
                 mainStage.setScene(Main.createSimulationScene());
             } else if (algorithmToggleGroup.getSelectedToggle() == algorithm2RadioButton){
-                //Main.elevatorRun(hotel.getElevators()[0], "C-LOOK"); // TODO
-                //Main.elevatorRun(hotel.getElevators()[0], "C-LOOK"); // TODO
+                Main.startSimulation("C-LOOK");
+                Stage mainStage = (Stage) startSimulationButton.getScene().getWindow();
+                mainStage.setScene(Main.createSimulationScene());
 
-                // showing a label under the button to inform the user that the algorithm is not implemented yet , then removing it after 2 seconds
-                SSPerrorLabel.setText("C-LOOK is not implemented yet");
-
-                Timeline timeline = new Timeline(
-                        new KeyFrame(Duration.seconds(3), e6 -> {
-                            SSPerrorLabel.setText("");
-                        })
-                );
-                timeline.setCycleCount(1);
-                timeline.play();
             } else {
                 // showing a label under the button to inform the user that no algorithm is selected, then removing it after 2 seconds
                 SSPerrorLabel.setText("Please select an algorithm");

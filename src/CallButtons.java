@@ -20,4 +20,14 @@ public class CallButtons extends ControlButtons implements RequestElevator {
     public boolean isPressed(){
         return getButtonsStatus()[0] || getButtonsStatus()[1];
     }
+
+    public boolean isPressedUp(){
+        return getButtonsStatus()[0];
+    }
+
+    public boolean isPressedDown(){
+        return getButtonsStatus()[1];
+    }
 }
+
+
