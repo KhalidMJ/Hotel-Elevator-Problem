@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class Floor {
     private final ArrayList<Passenger> waitingPassengers;
@@ -29,9 +28,11 @@ public class Floor {
     // Method to handle elevator arrival at the floor
     public void elevatorArrival(Elevator elevator) {
         // Taking a copy of the call button in case not all the passengers will enter the elevator, then resetting it
-        boolean[] callButtonStatus = callButton.getButtonsStatus().clone();
+        boolean[] callButtonStatusCopy = callButton.getButtonsStatus().clone(); // shallow copy
+
+        // Clearing the necessary buttons
         callButton.clearAllButtons();
-        elevator.getCabButtons().clearButton(this.FLOOR_NUMBER); // Clear the cab button of the current floor
+        elevator.getCabButtons().clearButton(this.FLOOR_NUMBER);
 
         // Opening the elevator doors, and letting arrived passengers leave the elevator
         elevator.openDoors();
@@ -40,11 +41,10 @@ public class Floor {
         // Let waiting passengers enter the elevator
         synchronized (this){
             elevator.loadPassengers(this.waitingPassengers);
-            // if not all the waiting passengers entered the elevator, restore the call button status
-            if (!this.waitingPassengers.isEmpty()) {
-                callButton.setButtonsStatus(callButtonStatus);
+            if (!this.waitingPassengers.isEmpty()) { // if not all the waiting passengers entered the elevator, restore the call button status
+                callButton.setButtonsStatus(callButtonStatusCopy);
             }
-            elevatorDeparture(elevator);
+            elevatorDeparture(elevator); // Depart the elevator
         }
     }
 
@@ -60,6 +60,7 @@ public class Floor {
         waitingPassengers.clear();
     }
 
+    // Method to get the call button
     public CallButtons getCallButton() {
         return callButton;
     }
@@ -78,5 +79,4 @@ public class Floor {
     public String getFloorType() {
         return FLOOR_TYPE;
     }
-
-    }
+}

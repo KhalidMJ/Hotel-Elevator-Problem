@@ -4,22 +4,25 @@ public abstract class ControlButtons {
         private int buttonsCount;
         private boolean[] buttonsStatus;  // status of all the buttons
 
-
+        // Constructor
         public ControlButtons(int buttonsCount){
                 this.buttonsCount = buttonsCount;
                 this.buttonsStatus = new boolean[buttonsCount];
         }
-        // this method to clear all buttons
+
+        // this method will clear all buttons
         public void clearAllButtons(){
-                for (int i=0; i<buttonsCount; i++){
+                for (int i=0; i < buttonsCount; i++){
                         buttonsStatus[i] = false;
                 }
         }
-        // this method to clear a button
+
+        // this method will clear a button
         public void clearButton(int i){
                 buttonsStatus[i] = false;
         }
 
+        // this method for pressing a button
         public void pressButton(int i){
                 buttonsStatus[i] = true;
         }
@@ -34,10 +37,8 @@ public abstract class ControlButtons {
                 return buttonsStatus;
         }
 
+        // this method will set the buttons' status
         public void setButtonsStatus(boolean[] buttonsStatus) {
                 this.buttonsStatus = buttonsStatus;
         }
 }
-
-
-

@@ -27,7 +27,7 @@ public class Main extends Application {
     private static final String passengersFilePath = "src/Passengers.csv";
 
     public static void main(String[] args) {
-        // Creating the simulation main objects -----------------------
+        // Creating the simulation main objects
         hotel = new Hotel(8, 2);
         elevator1 = hotel.getElevators()[0];
         elevator2 = hotel.getElevators()[1];
@@ -130,7 +130,6 @@ public class Main extends Application {
         // update the passengers on each floor
         hotel.updateFloorPassengers();
     }
-
 }
 
 // GUI Classes ----------------------------------------------------

@@ -16,26 +16,28 @@ public class Simulation {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
             ArrayList<String> lines = new ArrayList<>(reader.lines().toList());
-            lines.remove(0); // First line (labels) is omitted
+
+            // First line (labels) is omitted
+            lines.remove(0);
+
+            // Creating 2D array and store the extracted values in it
             int count = lines.size();
             int fields = lines.get(0).split(",").length;
-            // Creating 2D array and store the extracted values in it
             String[][] passengers = new String[count][fields];
             for (int i = 0; i < lines.size(); i++){
                 String[] values = lines.get(i).split(",");
-
                 for (int j = 0; j < values.length; j++){
                     passengers[i][j] = values[j];
                 }
             }
 
+            // Closing the reader, and returning the 2D array.
             reader.close();
             Simulation.passengersCount = passengers.length;
             return passengers;
         } catch (FileNotFoundException fnfe) {
             System.out.println("There is no such a file");
             System.out.println("Make sure the file is called \"Passengers.csv\" and exist in \"src/Passengers.csv\" relative path");
-
             return null;
         } catch (IOException ioe){
             System.out.println(ioe.getMessage());
@@ -45,16 +47,21 @@ public class Simulation {
 
     // Method to create Passenger objects using the data from 2D array and return them in an array.
     public static Passenger[] turnPassengersArrayIntoObjects(String[][] passengersData) throws IOException {
+        // Check if the input data is null
         if (passengersData == null) return null;
 
+        // Initialize variables for passenger attributes
         int count = passengersData.length;
         String name, id;
         double weight;
         int age, currentFloor, destinationFloor;
         long arrivalTime;
 
-        int i = 0;
+        // Create an array of Passenger objects
         Passenger[] passengerObjects = new Passenger[count];
+
+        // Loop through each row of the 2D array and create a passenger object, then store it in the array.
+        int i = 0;
         for (String[] data : passengersData) {
             name = data[1];
             id = data[2];
@@ -70,7 +77,10 @@ public class Simulation {
             } else if (data[0].equalsIgnoreCase("Staff")) {
                 Staff passenger = new Staff(name, id, weight, age, arrivalTime, currentFloor, destinationFloor);
                 passengerObjects[i] = passenger;
-            } else {throw new IOException("CSV FILE FORMAT IS NOT CORRECT");}
+            } else {
+                // Throw an IOException if the CSV file format is not correct
+                throw new IOException("CSV FILE FORMAT IS NOT CORRECT");
+            }
             i++;
         }
         return passengerObjects;
@@ -80,37 +90,42 @@ public class Simulation {
     public static void generateRandomPassengersToFile(int count, long firstPasTime, long lastPasTime, String path){
         String[] generatedPassengers = new String[count];
         String passenger;
-        // Probability Distributions
-        double[] currentFloorPD = {0.35, 0.10, 0.10, 0.09, 0.09, 0.09, 0.09, 0.09};
-        double[] FloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
-        double[] FloorFromGroundPD = {0.00, 0.15, 0.15, 0.14, 0.14, 0.14, 0.14, 0.14};
+        // Probability Distributions for Guest passengers
+        double[] guestCurrentFloorPD = {0.35, 0.10, 0.10, 0.09, 0.09, 0.09, 0.09, 0.09};
+        double[] guestDestinationFloorFromResPD = {0.72, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04};
+        double[] guestDestinationFloorFromGroundPD = {0.00, 0.15, 0.15, 0.14, 0.14, 0.14, 0.14, 0.14};
+
+        // Probability Distributions for Staff passengers
+        double[] staffCurrentFloorPD = {0.05, 0.14, 0.14, 0.13, 0.14, 0.14, 0.13, 0.13};
+        double[] staffDestinationFloorFromResPD = {0.00, 0.14, 0.14, 0.14, 0.14, 0.14, 0.15, 0.15};
+        double[] staffDestinationFloorFromGroundPD = {0.00, 0.14, 0.14, 0.14, 0.14, 0.14, 0.15, 0.15};
 
         // Generating Random Passengers
-        for (int i = 0; i < count; i++){ //FIXME: A passenger can have the same current and destination floors.
+        for (int i = 0; i < count; i++){
             passenger = "guest,"
                         + returnRandomName() + "," // Generating a random name
                         + returnRandomIndexFromRange(10000, 19999) + "," // Generating a random ID
                         + returnRandomIndexFromRange(30, 130) + "," // Generating a random weight
-                        + returnRandomIndexFromRange(15, 90) + ","  // Generating a random age
+                        + returnRandomIndexFromRange(15, 70) + ","  // Generating a random age
                         + returnRandomIndexFromRange((int)firstPasTime, (int)lastPasTime) + ","; // generating a random arrival time
 
-            int currentFloor = returnRandomIndexFromProbDist(currentFloorPD);
+            // generating a random current floor and destination floor based on the probability distributions, and making sure that the destination floor is not the same as the current floor
+            int currentFloor = returnRandomIndexFromProbDist(guestCurrentFloorPD);
             int destination;
             if (currentFloor == 0){
-                destination = returnRandomIndexFromProbDist(FloorFromGroundPD);
+                destination = returnRandomIndexFromProbDist(guestDestinationFloorFromGroundPD);
                 while (destination == currentFloor){
-                    destination = returnRandomIndexFromProbDist(FloorFromGroundPD);
+                    destination = returnRandomIndexFromProbDist(guestDestinationFloorFromGroundPD);
                 }
             } else {
-                 destination = returnRandomIndexFromProbDist(FloorFromResPD);
+                 destination = returnRandomIndexFromProbDist(guestDestinationFloorFromResPD);
                 while (destination == currentFloor){
-                    destination = returnRandomIndexFromProbDist(FloorFromResPD);
+                    destination = returnRandomIndexFromProbDist(guestDestinationFloorFromResPD);
                 }
             }
 
-
+            // Adding the current floor and destination floor to the passenger string and adding it to the array
             passenger = passenger + currentFloor + "," + destination + "\n";
-
             generatedPassengers[i] = passenger;
         }
 
@@ -120,18 +135,18 @@ public class Simulation {
             for (String person : generatedPassengers) {
                 writer.write(person);
             }
-
             System.out.println("String array successfully written to file: " + path);
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
         }
-
-
     }
 
     // Method to return an index based on a probability distribution given by user
     private static int returnRandomIndexFromProbDist(double[] dist) throws ArithmeticException{
-        if (Arrays.stream(dist).sum() != 1.0) throw new ArithmeticException("The sum of the probability distribution must be 1!");
+        // Check if the sum of the probability distribution is 1
+        if (Arrays.stream(dist).sum() != 1.0) {
+            throw new ArithmeticException("The sum of the probability distribution must be 1!");
+        }
 
         // dist is a reference variable, to avoid changing it a temp copy is created.
         double[] distCopy = dist.clone();
@@ -143,9 +158,13 @@ public class Simulation {
         return 0;
     }
 
+    // Method to sort an array of Passenger objects by arrival time
     public static Passenger[] sortPassengersByArrivalTime(Passenger[] passengers){
+        // Clone the input array to avoid modifying the original array
         Passenger[] sortedPassengers = passengers.clone();
         Passenger temp;
+
+        // Bubble sort algorithm to sort passengers based on arrival time
         for (int i = 0; i < sortedPassengers.length; i++){
             for (int j = 0; j < sortedPassengers.length - 1; j++){
                 if (sortedPassengers[j].getArrivalTime() > sortedPassengers[j + 1].getArrivalTime()){

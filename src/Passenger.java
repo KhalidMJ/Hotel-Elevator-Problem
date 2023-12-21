@@ -10,7 +10,7 @@ public class Passenger{
     private long waitingTime;
 
 
-    protected Passenger(String name, String id, double weight, int age, long arrivalTime, int currentFloor, int destinationFloor) {
+    public Passenger(String name, String id, double weight, int age, long arrivalTime, int currentFloor, int destinationFloor) {
         this.name = name;
         this.id = id;
         this.weight = weight;
@@ -18,27 +18,27 @@ public class Passenger{
         this.currentFloor = currentFloor;
         this.destinationFloor = destinationFloor;
         this.arrivalTime = arrivalTime;
-
     }
 
-
-    protected Passenger() {
+    public Passenger() {
         this.name = "Anonymous  guest";
         this.id = "11111";
         this.weight = 70;
         this.age = 25;
     }
 
+    // Method to simulate the passenger entering the elevator, and the time it takes to do so.
     public void enterElevator() {
         Simulation.delay(2);
     }
 
+    // Method to simulate the passenger exiting the elevator, and calculate the waiting time.
     public void exitElevator() {
         Simulation.delay(2);
         departureTime = Simulation.getElapsedTime();
         waitingTime = departureTime - this.arrivalTime;
         Simulation.addWaitingTime(this.waitingTime);
-        ResultsTablePane.updateTable(this);
+        ResultsTablePane.updateTable(this); // updating the results table
     }
 
     public void requestUp(CallButtons callButtons) {
