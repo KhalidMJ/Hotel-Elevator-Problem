@@ -94,27 +94,21 @@ public class Elevator {
 
     // Method to check if there are requests above the current floor
     public boolean hasRequestsAbove(){
-        System.out.println("Checking up");
         for (int i = this.currentFloor + 1; i < this.currentHotel.getFloors().length; i++){
             if (this.cabButtons.getButtonsStatus()[i] || getCallButtonOfFloor(i).isPressed()){
-                System.out.println("Found up");
                 return true;
             }
         }
-        System.out.println("Not found up");
         return false;
     }
 
     // Method to check if there are requests below the current floor
     public boolean hasRequestsBelow(){
-        System.out.println("Checking down");
         for (int i = this.currentFloor - 1; i >= 0; i--){
             if (this.cabButtons.getButtonsStatus()[i] || getCallButtonOfFloor(i).isPressed()){
-                System.out.println("Found down");
                 return true;
             }
         }
-        System.out.println("Not found down");
         return false;
     }
 
